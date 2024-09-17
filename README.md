@@ -8,7 +8,11 @@ Run `npm start:dev` for a dev server. Navigate to `http://localhost:3000/`. The 
 
 ## Build
 
-Run `npm build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm build` to build the project. The build artifacts will be stored in the `build/` directory.
+
+## Docker Run
+
+docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish 5432:5432 --detach postgres
 
 ## Tabelas
 
@@ -27,12 +31,11 @@ pass VARCHAR(100) NOT NULL
 ALTER TABLE pessoa
 ADD COLUMN usuario_id int UNIQUE;
 
-CREATE TABLE educa_online (
+CREATE TABLE post (
 id SERIAL PRIMARY KEY,
+autor VARCHAR(100),
 titulo VARCHAR(100),
-post VARCHAR(2000),
+conteudo VARCHAR(2000),
 dt_criacao TIMESTAMP ,
-dt_modificacao TIMESTAMP ,
-arquivo BYTEA,
-nome_arquivo VARCHAR(100)
+dt_modificacao TIMESTAMP
 );

@@ -1,11 +1,10 @@
-export class EducaOnline {
+export class Post {
     id?: number;
     titulo?: string;
-    post?: string;
+    conteudo?: string;
+    autor?: string;
     dtCriacao?: Date;
     dtModificacao?: Date;
-    nomeArquivo?: string;
-    arquivo?: ArrayBuffer;
 
     constructor() {
     }
