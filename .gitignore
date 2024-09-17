@@ -1,3 +1,4 @@
 docker-compose.yml
+*.yml
 /node_modules
 .env
