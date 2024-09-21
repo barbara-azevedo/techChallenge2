@@ -17,23 +17,17 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/entities/person.entities.ts
-var person_entities_exports = {};
-__export(person_entities_exports, {
-  Person: () => Person
+// src/entities/post.entities.ts
+var post_entities_exports = {};
+__export(post_entities_exports, {
+  Post: () => Post
 });
-module.exports = __toCommonJS(person_entities_exports);
-var Person = class {
-  constructor(id, cpf, name, bith, email, usuario_id) {
-    this.id = id;
-    this.cpf = cpf;
-    this.name = name;
-    this.bith = bith;
-    this.email = email;
-    this.usuario_id = usuario_id;
+module.exports = __toCommonJS(post_entities_exports);
+var Post = class {
+  constructor() {
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  Person
+  Post
 });

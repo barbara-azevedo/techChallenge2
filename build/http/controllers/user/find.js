@@ -17,12 +17,12 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/repositories/person.repo.ts
-var person_repo_exports = {};
-__export(person_repo_exports, {
-  PersonRepo: () => PersonRepo
+// src/http/controllers/user/find.ts
+var find_exports = {};
+__export(find_exports, {
+  findUser: () => findUser
 });
-module.exports = __toCommonJS(person_repo_exports);
+module.exports = __toCommonJS(find_exports);
 
 // env/index.ts
 var import_config = require("dotenv/config");
@@ -71,43 +71,53 @@ var db = class {
 };
 var database = new db();
 
-// src/repositories/person.repo.ts
-var PersonRepo = class {
-  async create({
-    cpf,
-    name,
-    bith,
-    email,
-    usuario_id
-  }) {
+// src/repositories/user.repo.ts
+var UsuarioRepo = class {
+  async create({ username, password }) {
     const result = await database.clientInstance?.query(
-      `
-            INSERT INTO "person" (cpf, name, bith, email, usuario_id) 
-            VALUES 
-            ($1,$2,$3,$4,$5) RETURNING *`,
-      [
-        cpf,
-        name,
-        bith,
-        email,
-        usuario_id
-      ]
+      `INSERT INTO "usuario" (username,pass) VALUES ($1,$2) RETURNING *`,
+      [username, password]
     );
     return result?.rows[0];
   }
   async findWithPerson(userId) {
     const result = await database.clientInstance?.query(
-      `
-            SELECT * FORM usuario
-            LEFT JOIN person ON usuario.id = person.usuario_id
-            WHERE usuario.id = $1
+      `SELECT * FROM "usuario" LEFT JOIN person ON "usuario".id = person.usuario_id WHERE "usuario".id = $1
             `,
       [userId]
     );
     return result?.rows[0];
   }
 };
+
+// src/user-cases/find-with-person.ts
+var FindWithPersonUserCase = class {
+  constructor(userRepo) {
+    this.userRepo = userRepo;
+  }
+  async handler(userId) {
+    return this.userRepo.findWithPerson(userId);
+  }
+};
+
+// src/http/controllers/user/find.ts
+var import_zod2 = require("zod");
+async function findUser(req, rep) {
+  const resgisterParameterSchema = import_zod2.z.object({
+    id: import_zod2.z.coerce.number()
+  });
+  const { id } = resgisterParameterSchema.parse(req.params);
+  try {
+    const userRepo = new UsuarioRepo();
+    const findWi = new FindWithPersonUserCase(userRepo);
+    const user = await findWi.handler(id);
+    return rep.status(200).send(user);
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error(`Erro ${error}`);
+  }
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  PersonRepo
+  findUser
 });

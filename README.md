@@ -14,6 +14,9 @@ Run `npm build` to build the project. The build artifacts will be stored in the 
 
 docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish 5432:5432 --detach postgres
 
+## URLs
+<host>:<port>/post/all -> pustar todos posts
+
 ## Tabelas
 
 CREATE TABLE pessoa (

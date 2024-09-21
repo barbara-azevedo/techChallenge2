@@ -17,23 +17,21 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/entities/person.entities.ts
-var person_entities_exports = {};
-__export(person_entities_exports, {
-  Person: () => Person
+// src/user-cases/find-with-person.ts
+var find_with_person_exports = {};
+__export(find_with_person_exports, {
+  FindWithPersonUserCase: () => FindWithPersonUserCase
 });
-module.exports = __toCommonJS(person_entities_exports);
-var Person = class {
-  constructor(id, cpf, name, bith, email, usuario_id) {
-    this.id = id;
-    this.cpf = cpf;
-    this.name = name;
-    this.bith = bith;
-    this.email = email;
-    this.usuario_id = usuario_id;
+module.exports = __toCommonJS(find_with_person_exports);
+var FindWithPersonUserCase = class {
+  constructor(userRepo) {
+    this.userRepo = userRepo;
+  }
+  async handler(userId) {
+    return this.userRepo.findWithPerson(userId);
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  Person
+  FindWithPersonUserCase
 });

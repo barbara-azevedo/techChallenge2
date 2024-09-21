@@ -17,12 +17,12 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/repositories/person.repo.ts
-var person_repo_exports = {};
-__export(person_repo_exports, {
-  PersonRepo: () => PersonRepo
+// src/repositories/post.repository.ts
+var post_repository_exports = {};
+__export(post_repository_exports, {
+  PostRepository: () => PostRepository
 });
-module.exports = __toCommonJS(person_repo_exports);
+module.exports = __toCommonJS(post_repository_exports);
 
 // env/index.ts
 var import_config = require("dotenv/config");
@@ -71,43 +71,54 @@ var db = class {
 };
 var database = new db();
 
-// src/repositories/person.repo.ts
-var PersonRepo = class {
-  async create({
-    cpf,
-    name,
-    bith,
-    email,
-    usuario_id
-  }) {
+// src/repositories/post.repository.ts
+var PostRepository = class {
+  async update({ id, autor, titulo, conteudo }) {
     const result = await database.clientInstance?.query(
-      `
-            INSERT INTO "person" (cpf, name, bith, email, usuario_id) 
-            VALUES 
-            ($1,$2,$3,$4,$5) RETURNING *`,
-      [
-        cpf,
-        name,
-        bith,
-        email,
-        usuario_id
-      ]
+      `UPDATE "post" set autor=$1, titulo=$2, conteudo=$3, dt_modificacao=$4 
+                WHERE "post".id = $5`,
+      [autor, titulo, conteudo, /* @__PURE__ */ new Date(), id]
     );
     return result?.rows[0];
   }
-  async findWithPerson(userId) {
+  async createPost({ titulo, conteudo, autor }) {
     const result = await database.clientInstance?.query(
-      `
-            SELECT * FORM usuario
-            LEFT JOIN person ON usuario.id = person.usuario_id
-            WHERE usuario.id = $1
-            `,
-      [userId]
+      `INSERT INTO "post" (titulo, conteudo, autor, dt_criacao, dt_modificacao) 
+                VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+      [titulo, conteudo, autor, /* @__PURE__ */ new Date(), /* @__PURE__ */ new Date()]
     );
     return result?.rows[0];
+  }
+  async remove(id) {
+    const result = await database.clientInstance?.query(
+      `DELETE FROM "post" WHERE "post".id = $1`,
+      [id]
+    );
+    return result?.rows[0];
+  }
+  async findPostAll() {
+    const result = await database.clientInstance?.query(
+      `SELECT * FROM "post"`,
+      []
+    );
+    return result?.rows;
+  }
+  async findPostId(postId) {
+    const result = await database.clientInstance?.query(
+      `SELECT * FROM "post" WHERE "post".id = $1`,
+      [postId]
+    );
+    return result?.rows[0];
+  }
+  async findPostSearch(search) {
+    const result = await database.clientInstance?.query(
+      `SELECT * FROM "post" WHERE "post".conteudo like '%'||$1||'%'`,
+      [search]
+    );
+    return result?.rows;
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  PersonRepo
+  PostRepository
 });

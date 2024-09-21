@@ -17,12 +17,12 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/repositories/person.repo.ts
-var person_repo_exports = {};
-__export(person_repo_exports, {
-  PersonRepo: () => PersonRepo
+// src/lib/db/pg.ts
+var pg_exports = {};
+__export(pg_exports, {
+  database: () => database
 });
-module.exports = __toCommonJS(person_repo_exports);
+module.exports = __toCommonJS(pg_exports);
 
 // env/index.ts
 var import_config = require("dotenv/config");
@@ -70,44 +70,7 @@ var db = class {
   }
 };
 var database = new db();
-
-// src/repositories/person.repo.ts
-var PersonRepo = class {
-  async create({
-    cpf,
-    name,
-    bith,
-    email,
-    usuario_id
-  }) {
-    const result = await database.clientInstance?.query(
-      `
-            INSERT INTO "person" (cpf, name, bith, email, usuario_id) 
-            VALUES 
-            ($1,$2,$3,$4,$5) RETURNING *`,
-      [
-        cpf,
-        name,
-        bith,
-        email,
-        usuario_id
-      ]
-    );
-    return result?.rows[0];
-  }
-  async findWithPerson(userId) {
-    const result = await database.clientInstance?.query(
-      `
-            SELECT * FORM usuario
-            LEFT JOIN person ON usuario.id = person.usuario_id
-            WHERE usuario.id = $1
-            `,
-      [userId]
-    );
-    return result?.rows[0];
-  }
-};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  PersonRepo
+  database
 });

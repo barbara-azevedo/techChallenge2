@@ -1,6 +1,6 @@
 import { Post } from "@/entities/post.entities";
 
-export interface IUPostRepository {
+export interface IPostRepository {
     update({ id, autor, titulo, conteudo }: Post): Promise<Post | undefined>
     createPost({ titulo, conteudo, autor }: Post): Promise<Post | undefined>
     remove(id : number): Promise<Post | undefined>

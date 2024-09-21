@@ -1,8 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { createPost, removePost, updatePost } from "./crud";
-import { findPostAll, findPostId, findSearchPost } from "./find";
+import { createPost, findPostAll, findPostId, findSearchPost, removePost, updatePost } from "./crud";
 
-export async function postRoutes(app:FastifyInstance) {
+export async function postRoutes(app: FastifyInstance) {
     app.get('/post/all', findPostAll);
     app.get('/post/:id', findPostId);
     app.get('/post/search/:search', findSearchPost);

@@ -3,10 +3,6 @@ var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -17,23 +13,6 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/entities/person.entities.ts
-var person_entities_exports = {};
-__export(person_entities_exports, {
-  Person: () => Person
-});
-module.exports = __toCommonJS(person_entities_exports);
-var Person = class {
-  constructor(id, cpf, name, bith, email, usuario_id) {
-    this.id = id;
-    this.cpf = cpf;
-    this.name = name;
-    this.bith = bith;
-    this.email = email;
-    this.usuario_id = usuario_id;
-  }
-};
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  Person
-});
+// src/repositories/post.interface.ts
+var post_interface_exports = {};
+module.exports = __toCommonJS(post_interface_exports);

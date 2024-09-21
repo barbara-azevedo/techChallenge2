@@ -1,8 +1,8 @@
 import { Post } from "@/entities/post.entities";
 import { database } from "@/lib/db/pg";
-import { IUPostRepository } from "./post.interface";
+import { IPostRepository } from "./post.interface";
 
-export class PostRepository implements IUPostRepository {
+export class PostRepository implements IPostRepository {
 
     public async update({ id, autor, titulo, conteudo }: Post): Promise<Post | undefined> {
         const result = await database.clientInstance?.query<Post>(
