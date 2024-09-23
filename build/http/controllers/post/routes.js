@@ -73,49 +73,69 @@ var database = new db();
 
 // src/repositories/post.repository.ts
 var PostRepository = class {
-  async update({ id, autor, titulo, conteudo }) {
+  async createPost({ titulo, conteudo, id_autor }) {
     const result = await database.clientInstance?.query(
-      `UPDATE "post" set autor=$1, titulo=$2, conteudo=$3, dt_modificacao=$4 
-                WHERE "post".id = $5`,
-      [autor, titulo, conteudo, /* @__PURE__ */ new Date(), id]
-    );
-    return result?.rows[0];
-  }
-  async createPost({ titulo, conteudo, autor }) {
-    const result = await database.clientInstance?.query(
-      `INSERT INTO "post" (titulo, conteudo, autor, dt_criacao, dt_modificacao) 
+      `INSERT INTO "post" (titulo, conteudo, dt_criacao, dt_modificacao, id_autor) 
                 VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [titulo, conteudo, autor, /* @__PURE__ */ new Date(), /* @__PURE__ */ new Date()]
+      [titulo, conteudo, /* @__PURE__ */ new Date(), /* @__PURE__ */ new Date(), id_autor]
     );
     return result?.rows[0];
   }
-  async remove(id) {
+  async update({ id_post, titulo, conteudo, id_autor }) {
     const result = await database.clientInstance?.query(
-      `DELETE FROM "post" WHERE "post".id = $1`,
-      [id]
+      `UPDATE "post" set titulo=$1, conteudo=$2, dt_modificacao=$3, id_autor=$4 
+                    WHERE "post".id_post = $5`,
+      [titulo, conteudo, /* @__PURE__ */ new Date(), id_autor, id_post]
     );
     return result?.rows[0];
   }
+  async remove(id_post) {
+    const result = await database.clientInstance?.query(
+      `DELETE FROM "post" WHERE "post".id_post = $1`,
+      [id_post]
+    );
+    return result?.rows[0];
+  }
+  //------------------------------FINDs
   async findPostAll() {
     const result = await database.clientInstance?.query(
-      `SELECT * FROM "post"`,
-      []
+      `SELECT * FROM "post" 
+                INNER JOIN "autor" ON "post".id_autor = "autor".id_autor 
+                ORDER BY "post".dt_criacao DESC`
     );
     return result?.rows;
   }
   async findPostId(postId) {
     const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" WHERE "post".id = $1`,
+      `SELECT * FROM "post" LEFT JOIN "autor" ON "post".id_autor = "autor".id_autor 
+                WHERE "post".id_post = $1`,
       [postId]
     );
     return result?.rows[0];
   }
   async findPostSearch(search) {
     const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" WHERE "post".conteudo like '%'||$1||'%'`,
+      `SELECT * FROM "post" LEFT JOIN "autor" ON "post".id_autor = "autor".id_autor 
+                WHERE "post".conteudo like '%'||$1||'%' ORDER BY "post".dt_criacao DESC`,
       [search]
     );
     return result?.rows;
+  }
+  async findPostAndAutorSearch(search) {
+    const result = await database.clientInstance?.query(
+      `SELECT * FROM "post" INNER JOIN "autor" ON "post".id_autor = "autor".id_autor
+                WHERE "autor".nome like '%'||$1||'%' 
+                ORDER BY "post".dt_criacao DESC`,
+      [search]
+    );
+    return result?.rows;
+  }
+};
+
+// src/user-cases/erros/resource-not-found-erros.ts
+var ResourcesNotFoundErrors = class extends Error {
+  constructor() {
+    super("Resource not found");
   }
 };
 
@@ -125,7 +145,10 @@ var CreatePostUseCase = class {
     this.repo = repo;
   }
   async handler(post) {
-    return this.repo.createPost(post);
+    const p = await this.repo.createPost(post);
+    if (!p)
+      throw new ResourcesNotFoundErrors();
+    return p;
   }
 };
 var UpdatePostUseCase = class {
@@ -144,14 +167,77 @@ var RemovePostUseCase = class {
     return this.repo.remove(id);
   }
 };
+var FindAllPostUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler() {
+    return this.repo.findPostAll();
+  }
+};
 var FindIdPostUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(id) {
-    return this.repo.findPostId(id);
+    const p = await this.repo.findPostId(id);
+    if (!p) throw new ResourcesNotFoundErrors();
+    return p;
   }
 };
+var FindSearchPostUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler(search) {
+    return this.repo.findPostSearch(search);
+  }
+};
+var FindSearchPostAndAutorUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler(search) {
+    return this.repo.findPostAndAutorSearch(search);
+  }
+};
+
+// src/user-cases/factory/make-crud-post-use-case.ts
+function MakeCrudCreatePost() {
+  const repo = new PostRepository();
+  const createPostUseCase = new CreatePostUseCase(repo);
+  return createPostUseCase;
+}
+function MakeCrudUpdatePost() {
+  const repo = new PostRepository();
+  const updatePostUseCase = new UpdatePostUseCase(repo);
+  return updatePostUseCase;
+}
+function MakeCrudRemoverPost() {
+  const repo = new PostRepository();
+  const removePostUseCase = new RemovePostUseCase(repo);
+  return removePostUseCase;
+}
+function MakeCrudFindIdPost() {
+  const repo = new PostRepository();
+  const findIdPostUseCase = new FindIdPostUseCase(repo);
+  return findIdPostUseCase;
+}
+function MakeCrudFindAlldPost() {
+  const repo = new PostRepository();
+  const findAllPostUseCase = new FindAllPostUseCase(repo);
+  return findAllPostUseCase;
+}
+function MakeCrudFindSearchdPost() {
+  const repo = new PostRepository();
+  const findSearchPostUseCase = new FindSearchPostUseCase(repo);
+  return findSearchPostUseCase;
+}
+function MakeCrudFindSearchdPostAndAutor() {
+  const repo = new PostRepository();
+  const findSearchPostAndAutorUseCase = new FindSearchPostAndAutorUseCase(repo);
+  return findSearchPostAndAutorUseCase;
+}
 
 // src/http/controllers/post/crud.ts
 var import_zod2 = require("zod");
@@ -159,120 +245,94 @@ async function createPost(req, rep) {
   const registerBodySchema = import_zod2.z.object({
     titulo: import_zod2.z.string(),
     conteudo: import_zod2.z.string(),
-    autor: import_zod2.z.string()
+    id_autor: import_zod2.z.coerce.number()
   });
-  const { titulo, conteudo, autor } = registerBodySchema.parse(req.body);
-  try {
-    const postRepo = new PostRepository();
-    const createPostUseCase = new CreatePostUseCase(postRepo);
-    const p = await createPostUseCase.handler({ titulo, conteudo, autor });
-    return rep.code(201).send(p);
-  } catch (error) {
-    console.error(error);
-    throw new Error("Internal server error");
-  }
+  const { titulo, conteudo, id_autor } = registerBodySchema.parse(req.body);
+  const createPostUseCase = MakeCrudCreatePost();
+  const p = await createPostUseCase.handler({ titulo, conteudo, id_autor });
+  return rep.code(201).send(p);
 }
 async function updatePost(req, rep) {
   const resgisterParameterSchema = import_zod2.z.object({
-    id: import_zod2.z.coerce.number()
+    id_post: import_zod2.z.coerce.number()
   });
-  const { id } = resgisterParameterSchema.parse(req.params);
+  const { id_post } = resgisterParameterSchema.parse(req.params);
+  console.log(id_post);
   const registerBodySchema = import_zod2.z.object({
-    autor: import_zod2.z.string(),
     titulo: import_zod2.z.string(),
-    conteudo: import_zod2.z.string()
+    conteudo: import_zod2.z.string(),
+    id_autor: import_zod2.z.coerce.number()
   });
-  const { autor, titulo, conteudo } = registerBodySchema.parse(req.body);
-  if (id === void 0 || id === 0) {
-    return rep.code(500).send("Id null");
+  const { titulo, conteudo, id_autor } = registerBodySchema.parse(req.body);
+  if (id_post === void 0 || id_post === 0) {
+    return rep.code(400).send("Informe o id do post para altera\xE7\xE3o");
   }
-  try {
-    const postRepo = new PostRepository();
-    const updatePostUseCase = new UpdatePostUseCase(postRepo);
-    updatePostUseCase.handler({ id, autor, titulo, conteudo });
-    return rep.code(200).send("success");
-  } catch (error) {
-    console.error(error);
-    throw new Error("Internal server error");
-  }
+  const updatePostUseCase = MakeCrudUpdatePost();
+  const a = await updatePostUseCase.handler({ id_post, titulo, conteudo, id_autor });
+  return rep.code(200).send(a);
 }
 async function removePost(req, rep) {
   const resgisterParameterSchema = import_zod2.z.object({
-    id: import_zod2.z.coerce.number()
+    id_post: import_zod2.z.coerce.number()
   });
-  const { id } = resgisterParameterSchema.parse(req.params);
-  if (id === void 0 || id === 0) {
-    return rep.code(500).send("Id null");
+  const { id_post } = resgisterParameterSchema.parse(req.params);
+  if (id_post === void 0 || id_post === 0) {
+    return rep.code(500).send("Informe o id do post para exclus\xE3o");
   }
-  try {
-    const postRepo = new PostRepository();
-    const removePostUseCase = new RemovePostUseCase(postRepo);
-    const finIdPostUseCase = new FindIdPostUseCase(postRepo);
-    const post = await finIdPostUseCase.handler(id);
-    if (post?.id === void 0)
-      return rep.status(404).send("Objeto n\xE3o encontrado");
-    removePostUseCase.handler(id);
-    return rep.code(200).send("success");
-  } catch (error) {
-    console.error(error);
-    throw new Error("Internal server error");
-  }
+  const removePostUseCase = MakeCrudRemoverPost();
+  const finIdPostUseCase = MakeCrudFindIdPost();
+  const post = await finIdPostUseCase.handler(id_post);
+  if (post?.id_post === void 0)
+    return rep.status(404).send("Objeto n\xE3o encontrado");
+  removePostUseCase.handler(id_post);
+  return rep.code(200).send("success");
 }
-
-// src/http/controllers/post/find.ts
-var import_zod3 = require("zod");
 async function findPostAll(req, rep) {
-  try {
-    const postRepo = new PostRepository();
-    const post = await postRepo.findPostAll();
-    return rep.status(200).send(post);
-  } catch (error) {
-    console.error("error" + error);
-    throw new Error(`Erro ${error}`);
-  }
+  const postRepo = MakeCrudFindAlldPost();
+  const post = await postRepo.handler();
+  return rep.status(200).send({ post });
 }
 async function findPostId(req, rep) {
-  const resgisterParameterSchema = import_zod3.z.object({
-    id: import_zod3.z.coerce.number()
+  const resgisterParameterSchema = import_zod2.z.object({
+    id_post: import_zod2.z.coerce.number()
   });
-  const { id } = resgisterParameterSchema.parse(req.params);
-  try {
-    const postRepo = new PostRepository();
-    const post = await postRepo.findPostId(id);
-    if (post?.id === void 0)
-      return rep.status(404).send("Objeto n\xE3o encontrado");
-    return rep.status(200).send(post);
-  } catch (error) {
-    console.error("error" + error);
-    throw new Error(`Erro ${error}`);
-  }
+  const { id_post } = resgisterParameterSchema.parse(req.params);
+  const postRepo = MakeCrudFindIdPost();
+  const post = await postRepo.handler(id_post);
+  return rep.status(200).send({ post });
 }
 async function findSearchPost(req, rep) {
-  const resgisterParameterSchema = import_zod3.z.object({
-    search: import_zod3.z.coerce.string()
+  const resgisterParameterSchema = import_zod2.z.object({
+    search: import_zod2.z.coerce.string()
   });
   const { search } = resgisterParameterSchema.parse(req.params);
-  try {
-    const postRepo = new PostRepository();
-    const post = await postRepo.findPostSearch(search);
-    console.log(post);
-    if (post === void 0 || post.length === 0)
-      return rep.status(404).send("Nenhum valor encontrado");
-    return rep.status(200).send(post);
-  } catch (error) {
-    console.error("error" + error);
-    throw new Error(`Erro ${error}`);
-  }
+  const postRepo = MakeCrudFindSearchdPost();
+  const post = await postRepo.handler(search);
+  if (post === void 0 || post.length === 0)
+    return rep.status(404).send("Nenhum valor encontrado");
+  return rep.status(200).send({ post });
+}
+async function findSearchPostAndAutor(req, rep) {
+  const resgisterParameterSchema = import_zod2.z.object({
+    search: import_zod2.z.coerce.string()
+  });
+  const { search } = resgisterParameterSchema.parse(req.params);
+  const postRepo = MakeCrudFindSearchdPostAndAutor();
+  const post = await postRepo.handler(search);
+  if (post === void 0 || post.length === 0)
+    return rep.status(404).send("Nenhum valor encontrado");
+  return rep.status(200).send({ post });
 }
 
 // src/http/controllers/post/routes.ts
 async function postRoutes(app) {
   app.get("/post/all", findPostAll);
-  app.get("/post/:id", findPostId);
+  app.get("/post/:id_post", findPostId);
   app.get("/post/search/:search", findSearchPost);
+  app.get("/post_autor/search/:search", findSearchPostAndAutor);
   app.post("/post/create", createPost);
-  app.post("/post/update/:id", updatePost);
-  app.post("/post/remove/:id", removePost);
+  app.post("/post/update/:id_post", updatePost);
+  app.post("/post/remove/:id_post", removePost);
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

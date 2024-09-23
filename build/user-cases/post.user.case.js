@@ -23,17 +23,30 @@ __export(post_user_case_exports, {
   CreatePostUseCase: () => CreatePostUseCase,
   FindAllPostUseCase: () => FindAllPostUseCase,
   FindIdPostUseCase: () => FindIdPostUseCase,
+  FindSearchPostAndAutorUseCase: () => FindSearchPostAndAutorUseCase,
   FindSearchPostUseCase: () => FindSearchPostUseCase,
   RemovePostUseCase: () => RemovePostUseCase,
   UpdatePostUseCase: () => UpdatePostUseCase
 });
 module.exports = __toCommonJS(post_user_case_exports);
+
+// src/user-cases/erros/resource-not-found-erros.ts
+var ResourcesNotFoundErrors = class extends Error {
+  constructor() {
+    super("Resource not found");
+  }
+};
+
+// src/user-cases/post.user.case.ts
 var CreatePostUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(post) {
-    return this.repo.createPost(post);
+    const p = await this.repo.createPost(post);
+    if (!p)
+      throw new ResourcesNotFoundErrors();
+    return p;
   }
 };
 var UpdatePostUseCase = class {
@@ -65,7 +78,9 @@ var FindIdPostUseCase = class {
     this.repo = repo;
   }
   async handler(id) {
-    return this.repo.findPostId(id);
+    const p = await this.repo.findPostId(id);
+    if (!p) throw new ResourcesNotFoundErrors();
+    return p;
   }
 };
 var FindSearchPostUseCase = class {
@@ -76,11 +91,20 @@ var FindSearchPostUseCase = class {
     return this.repo.findPostSearch(search);
   }
 };
+var FindSearchPostAndAutorUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler(search) {
+    return this.repo.findPostAndAutorSearch(search);
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CreatePostUseCase,
   FindAllPostUseCase,
   FindIdPostUseCase,
+  FindSearchPostAndAutorUseCase,
   FindSearchPostUseCase,
   RemovePostUseCase,
   UpdatePostUseCase

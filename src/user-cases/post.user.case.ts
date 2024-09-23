@@ -49,3 +49,10 @@ export class FindSearchPostUseCase {
         return this.repo.findPostSearch(search);
     }
 }
+
+export class FindSearchPostAndAutorUseCase {
+    constructor(private repo: IPostRepository) { }
+    async handler(search: string): Promise<Post[] | undefined> {
+        return this.repo.findPostAndAutorSearch(search);
+    }
+}

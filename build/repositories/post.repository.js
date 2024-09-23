@@ -73,46 +73,59 @@ var database = new db();
 
 // src/repositories/post.repository.ts
 var PostRepository = class {
-  async update({ id, autor, titulo, conteudo }) {
+  async createPost({ titulo, conteudo, id_autor }) {
     const result = await database.clientInstance?.query(
-      `UPDATE "post" set autor=$1, titulo=$2, conteudo=$3, dt_modificacao=$4 
-                WHERE "post".id = $5`,
-      [autor, titulo, conteudo, /* @__PURE__ */ new Date(), id]
-    );
-    return result?.rows[0];
-  }
-  async createPost({ titulo, conteudo, autor }) {
-    const result = await database.clientInstance?.query(
-      `INSERT INTO "post" (titulo, conteudo, autor, dt_criacao, dt_modificacao) 
+      `INSERT INTO "post" (titulo, conteudo, dt_criacao, dt_modificacao, id_autor) 
                 VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [titulo, conteudo, autor, /* @__PURE__ */ new Date(), /* @__PURE__ */ new Date()]
+      [titulo, conteudo, /* @__PURE__ */ new Date(), /* @__PURE__ */ new Date(), id_autor]
     );
     return result?.rows[0];
   }
-  async remove(id) {
+  async update({ id_post, titulo, conteudo, id_autor }) {
     const result = await database.clientInstance?.query(
-      `DELETE FROM "post" WHERE "post".id = $1`,
-      [id]
+      `UPDATE "post" set titulo=$1, conteudo=$2, dt_modificacao=$3, id_autor=$4 
+                    WHERE "post".id_post = $5`,
+      [titulo, conteudo, /* @__PURE__ */ new Date(), id_autor, id_post]
     );
     return result?.rows[0];
   }
+  async remove(id_post) {
+    const result = await database.clientInstance?.query(
+      `DELETE FROM "post" WHERE "post".id_post = $1`,
+      [id_post]
+    );
+    return result?.rows[0];
+  }
+  //------------------------------FINDs
   async findPostAll() {
     const result = await database.clientInstance?.query(
-      `SELECT * FROM "post"`,
-      []
+      `SELECT * FROM "post" 
+                INNER JOIN "autor" ON "post".id_autor = "autor".id_autor 
+                ORDER BY "post".dt_criacao DESC`
     );
     return result?.rows;
   }
   async findPostId(postId) {
     const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" WHERE "post".id = $1`,
+      `SELECT * FROM "post" LEFT JOIN "autor" ON "post".id_autor = "autor".id_autor 
+                WHERE "post".id_post = $1`,
       [postId]
     );
     return result?.rows[0];
   }
   async findPostSearch(search) {
     const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" WHERE "post".conteudo like '%'||$1||'%'`,
+      `SELECT * FROM "post" LEFT JOIN "autor" ON "post".id_autor = "autor".id_autor 
+                WHERE "post".conteudo like '%'||$1||'%' ORDER BY "post".dt_criacao DESC`,
+      [search]
+    );
+    return result?.rows;
+  }
+  async findPostAndAutorSearch(search) {
+    const result = await database.clientInstance?.query(
+      `SELECT * FROM "post" INNER JOIN "autor" ON "post".id_autor = "autor".id_autor
+                WHERE "autor".nome like '%'||$1||'%' 
+                ORDER BY "post".dt_criacao DESC`,
       [search]
     );
     return result?.rows;

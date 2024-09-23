@@ -1,5 +1,9 @@
 
-import { MakeCrudCreatePost, MakeCrudFindAlldPost, MakeCrudFindIdPost, MakeCrudFindSearchdPost, MakeCrudRemoverPost, MakeCrudUpdatePost } from "@/user-cases/factory/make-crud-post-use-case";
+import {
+    MakeCrudCreatePost, MakeCrudFindAlldPost, MakeCrudFindIdPost, MakeCrudFindSearchdPost,
+    MakeCrudFindSearchdPostAndAutor,
+    MakeCrudRemoverPost, MakeCrudUpdatePost
+} from "@/user-cases/factory/make-crud-post-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
@@ -8,54 +12,54 @@ export async function createPost(req: FastifyRequest, rep: FastifyReply) {
     const registerBodySchema = z.object({
         titulo: z.string(),
         conteudo: z.string(),
-        autor: z.string()
+        id_autor: z.coerce.number()
     });
-    const { titulo, conteudo, autor } = registerBodySchema.parse(req.body);
-
+    const { titulo, conteudo, id_autor } = registerBodySchema.parse(req.body);
     const createPostUseCase = MakeCrudCreatePost();
-    const p = await createPostUseCase.handler({ titulo, conteudo, autor });
+    const p = await createPostUseCase.handler({ titulo, conteudo, id_autor });
     return rep.code(201).send(p);
 }
 
 export async function updatePost(req: FastifyRequest, rep: FastifyReply) {
     const resgisterParameterSchema = z.object({
-        id: z.coerce.number()
+        id_post: z.coerce.number()
     });
-    const { id } = resgisterParameterSchema.parse(req.params);
-
+    const { id_post } = resgisterParameterSchema.parse(req.params);
+    console.log(id_post);
+    
     const registerBodySchema = z.object({
-        autor: z.string(),
         titulo: z.string(),
-        conteudo: z.string()
+        conteudo: z.string(),
+        id_autor: z.coerce.number()
     });
-    const { autor, titulo, conteudo } = registerBodySchema.parse(req.body);
+    const { titulo, conteudo, id_autor } = registerBodySchema.parse(req.body);
 
-    if (id === undefined || id === 0) {
-        return rep.code(400).send('Id null');
+    if (id_post === undefined || id_post === 0) {
+        return rep.code(400).send('Informe o id do post para alteração');
     }
     const updatePostUseCase = MakeCrudUpdatePost()
-    updatePostUseCase.handler({ id, autor, titulo, conteudo });
-    return rep.code(200).send('success');
+    const a = await updatePostUseCase.handler({ id_post, titulo, conteudo, id_autor });
+    return rep.code(200).send(a);
 }
 
 export async function removePost(req: FastifyRequest, rep: FastifyReply) {
     const resgisterParameterSchema = z.object({
-        id: z.coerce.number()
+        id_post: z.coerce.number()
     });
-    const { id } = resgisterParameterSchema.parse(req.params);
+    const { id_post } = resgisterParameterSchema.parse(req.params);
 
-    if (id === undefined || id === 0) {
-        return rep.code(500).send('Id null');
+    if (id_post === undefined || id_post === 0) {
+        return rep.code(500).send('Informe o id do post para exclusão');
     }
     const removePostUseCase = MakeCrudRemoverPost();
 
     const finIdPostUseCase = MakeCrudFindIdPost();
-    const post = await finIdPostUseCase.handler(id);
+    const post = await finIdPostUseCase.handler(id_post);
 
-    if (post?.id === undefined)
+    if (post?.id_post === undefined)
         return rep.status(404).send("Objeto não encontrado");
 
-    removePostUseCase.handler(id);
+    removePostUseCase.handler(id_post);
     return rep.code(200).send('success');
 
 }
@@ -63,19 +67,19 @@ export async function removePost(req: FastifyRequest, rep: FastifyReply) {
 // CRUDs FIND
 export async function findPostAll(req: FastifyRequest, rep: FastifyReply) {
     const postRepo = MakeCrudFindAlldPost();
-    const post = await postRepo.handler();
-    return rep.status(200).send(post);
+    const post = await postRepo.handler();    
+    return rep.status(200).send({post});
 }
 
 export async function findPostId(req: FastifyRequest, rep: FastifyReply) {
     const resgisterParameterSchema = z.object({
-        id: z.coerce.number()
+        id_post: z.coerce.number()
     });
-    const { id } = resgisterParameterSchema.parse(req.params);
+    const { id_post } = resgisterParameterSchema.parse(req.params);
 
     const postRepo = MakeCrudFindIdPost();
-    const post = await postRepo.handler(id);
-    return rep.status(200).send(post);
+    const post = await postRepo.handler(id_post);
+    return rep.status(200).send({post});
 }
 
 export async function findSearchPost(req: FastifyRequest, rep: FastifyReply) {
@@ -90,5 +94,21 @@ export async function findSearchPost(req: FastifyRequest, rep: FastifyReply) {
 
     if (post === undefined || post.length === 0)
         return rep.status(404).send("Nenhum valor encontrado");
-    return rep.status(200).send(post);
+    return rep.status(200).send({post});
 }
+
+export async function findSearchPostAndAutor(req: FastifyRequest, rep: FastifyReply) {
+    const resgisterParameterSchema = z.object({
+        search: z.coerce.string()
+    });
+
+    const { search } = resgisterParameterSchema.parse(req.params);
+
+    const postRepo = MakeCrudFindSearchdPostAndAutor();
+    const post = await postRepo.handler(search);
+
+    if (post === undefined || post.length === 0)
+        return rep.status(404).send("Nenhum valor encontrado");
+    return rep.status(200).send({post});
+}
+

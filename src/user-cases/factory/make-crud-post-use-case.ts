@@ -1,9 +1,14 @@
 import { PostRepository } from "@/repositories/post.repository";
-import { CreatePostUseCase, FindAllPostUseCase, FindIdPostUseCase, FindSearchPostUseCase, RemovePostUseCase, UpdatePostUseCase } from "../post.user.case";
+import {
+    CreatePostUseCase, FindAllPostUseCase,
+    FindIdPostUseCase, FindSearchPostAndAutorUseCase,
+    FindSearchPostUseCase, RemovePostUseCase, UpdatePostUseCase
+} from "../post.user.case";
 
 export function MakeCrudCreatePost() {
     const repo = new PostRepository();
     const createPostUseCase = new CreatePostUseCase(repo);
+
     return createPostUseCase;
 }
 
@@ -35,4 +40,10 @@ export function MakeCrudFindSearchdPost() {
     const repo = new PostRepository();
     const findSearchPostUseCase = new FindSearchPostUseCase(repo);
     return findSearchPostUseCase;
+}
+
+export function MakeCrudFindSearchdPostAndAutor() {
+    const repo = new PostRepository();
+    const findSearchPostAndAutorUseCase = new FindSearchPostAndAutorUseCase(repo);
+    return findSearchPostAndAutorUseCase;
 }

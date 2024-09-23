@@ -1,11 +1,11 @@
+
 export class Post {
-    id?: number;
+    id_post?: number;
     titulo?: string;
     conteudo?: string;
-    autor?: string;
     dtCriacao?: Date;
     dtModificacao?: Date;
+    id_autor?: number;
 
-    constructor() {
-    }
+    constructor() { }
 }
