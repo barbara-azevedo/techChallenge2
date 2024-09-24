@@ -10,14 +10,14 @@ Run `npm start:dev` for a dev server. Navigate to `http://localhost:3000/`. The 
 
 Run `npm run build` to build the project. The build artifacts will be stored in the `build/` directory.
 
-## Docker
+# Docker
 
-# Docker Build
+## Docker Build
 
 Dentro da pasta raiz do projeto foi criado um arquivo DockerFile que server para efetuar o builder do projeto para dentro de um container docker.
 Comando para efetuar o build: "docker build . -t <nome-app>"
 
-# Docker Run
+## Docker Run
 
 Após efetuar o builder do projeto será necessário subir a aplicação:
 
