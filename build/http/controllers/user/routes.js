@@ -16,6 +16,14 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __decorateClass = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp(target, key, result);
+  return result;
+};
 
 // src/http/controllers/user/routes.ts
 var routes_exports = {};
@@ -23,6 +31,121 @@ __export(routes_exports, {
   userRoutes: () => userRoutes
 });
 module.exports = __toCommonJS(routes_exports);
+
+// src/entities/usuario.entities.ts
+var import_typeorm = require("typeorm");
+var Usuario = class {
+  constructor(email, senha) {
+    this.email = email;
+    this.senha = senha;
+  }
+};
+__decorateClass([
+  (0, import_typeorm.PrimaryColumn)({
+    name: "email",
+    type: "varchar"
+  })
+], Usuario.prototype, "email", 2);
+__decorateClass([
+  (0, import_typeorm.Column)({
+    name: "senha",
+    type: "varchar"
+  })
+], Usuario.prototype, "senha", 2);
+Usuario = __decorateClass([
+  (0, import_typeorm.Entity)({
+    name: "usuario"
+  })
+], Usuario);
+
+// src/lib/typeorm/typeorm.ts
+var import_typeorm4 = require("typeorm");
+
+// src/entities/autor.entities.ts
+var import_typeorm2 = require("typeorm");
+var Autor = class {
+  constructor() {
+  }
+};
+__decorateClass([
+  (0, import_typeorm2.PrimaryGeneratedColumn)("increment", {
+    name: "id_autor"
+  })
+], Autor.prototype, "id_autor", 2);
+__decorateClass([
+  (0, import_typeorm2.Column)({
+    name: "nome",
+    type: "varchar"
+  })
+], Autor.prototype, "nome", 2);
+__decorateClass([
+  (0, import_typeorm2.Column)({
+    name: "dt_criacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Autor.prototype, "dtCriacao", 2);
+__decorateClass([
+  (0, import_typeorm2.Column)({
+    name: "dt_modificacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Autor.prototype, "dtModificacao", 2);
+Autor = __decorateClass([
+  (0, import_typeorm2.Entity)({
+    name: "autor"
+  })
+], Autor);
+
+// src/entities/post.entities.ts
+var import_typeorm3 = require("typeorm");
+var Post = class {
+  constructor() {
+  }
+};
+__decorateClass([
+  (0, import_typeorm3.PrimaryGeneratedColumn)("increment", {
+    name: "id_post"
+  })
+], Post.prototype, "id_post", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "titulo",
+    type: "varchar"
+  })
+], Post.prototype, "titulo", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "conteudo",
+    type: "varchar"
+  })
+], Post.prototype, "conteudo", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "dt_criacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Post.prototype, "dtCriacao", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "dt_modificacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Post.prototype, "dtModificacao", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "id_autor",
+    type: "int"
+  })
+], Post.prototype, "id_autor", 2);
+Post = __decorateClass([
+  (0, import_typeorm3.Entity)({
+    name: "post"
+  })
+], Post);
 
 // env/index.ts
 var import_config = require("dotenv/config");
@@ -34,7 +157,8 @@ var envSchema = import_zod.z.object({
   DATABASE_HOST: import_zod.z.string(),
   DATABASE_NAME: import_zod.z.string(),
   DATABASE_PASSWORD: import_zod.z.string(),
-  DATABASE_PORT: import_zod.z.coerce.number()
+  DATABASE_PORT: import_zod.z.coerce.number(),
+  SECRET_JWT: import_zod.z.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -43,114 +167,120 @@ if (!_env.success) {
 }
 var env = _env.data;
 
-// src/lib/db/pg.ts
-var import_pg = require("pg");
-var CONFIG = {
-  user: env.DATABASE_USER,
+// src/lib/typeorm/typeorm.ts
+var appDataBase = new import_typeorm4.DataSource({
+  type: "postgres",
   host: env.DATABASE_HOST,
-  database: env.DATABASE_NAME,
+  port: env.DATABASE_PORT,
+  username: env.DATABASE_USER,
   password: env.DATABASE_PASSWORD,
-  port: env.DATABASE_PORT
-};
-var db = class {
+  database: env.DATABASE_NAME,
+  entities: [Autor, Post, Usuario],
+  logging: env.NODE_ENV === "development"
+});
+appDataBase.initialize().then(() => {
+  console.log("Database connected typeorm");
+}).catch((error) => {
+  console.error(`Erro connected typeorm: ${error}`);
+});
+
+// src/repositories/typeorm/usuario.repository.ts
+var UsuarioRepository = class {
   constructor() {
-    this.pool = new import_pg.Pool(CONFIG);
-    this.connection();
+    this.repo = appDataBase.getRepository(Usuario);
   }
-  async connection() {
-    try {
-      this.client = await this.pool.connect();
-    } catch (error) {
-      console.log(`Error connection database: ${error} `);
-      throw new Error(`Error connection database: ${error} `);
-    }
+  async createUsuario(usuario) {
+    return this.repo.save(usuario);
   }
-  get clientInstance() {
-    return this.client;
-  }
-};
-var database = new db();
-
-// src/repositories/user.repo.ts
-var UsuarioRepo = class {
-  async create({ username, password }) {
-    const result = await database.clientInstance?.query(
-      `INSERT INTO "usuario" (username,pass) VALUES ($1,$2) RETURNING *`,
-      [username, password]
-    );
-    return result?.rows[0];
-  }
-  async findWithPerson(userId) {
-    const result = await database.clientInstance?.query(
-      `SELECT * FROM "usuario" LEFT JOIN person ON "usuario".id = person.usuario_id WHERE "usuario".id = $1
-            `,
-      [userId]
-    );
-    return result?.rows[0];
+  async findByUsername(email) {
+    return this.repo.findOne({
+      where: { email }
+    });
   }
 };
 
-// src/user-cases/create-user.ts
+// src/user-cases/usuario-use-case.ts
 var CreateUsuarioUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(user) {
-    return this.repo.create(user);
+    return this.repo.createUsuario(user);
   }
 };
 
+// src/user-cases/factory/make-crud-usuario-use-case.ts
+function MakeCreateUsuarioUseCase() {
+  const repo = new UsuarioRepository();
+  const createUsuarioUseCase = new CreateUsuarioUseCase(repo);
+  return createUsuarioUseCase;
+}
+
 // src/http/controllers/user/create.ts
+var import_bcryptjs = require("bcryptjs");
 var import_zod2 = require("zod");
 async function create(req, rep) {
   const registerBodySchema = import_zod2.z.object({
-    username: import_zod2.z.string(),
-    password: import_zod2.z.string()
+    email: import_zod2.z.string().email({ message: "Email is required" }),
+    senha: import_zod2.z.string()
   });
-  const { username, password } = registerBodySchema.parse(req.body);
-  try {
-    const userRepo = new UsuarioRepo();
-    const createUsuarioUseCase = new CreateUsuarioUseCase(userRepo);
-    const user = await createUsuarioUseCase.handler({ username, password });
-    return rep.code(201).send(user);
-  } catch (error) {
-    console.error(error);
-    throw new Error("Internal server error");
-  }
+  const { email, senha } = registerBodySchema.parse(req.body);
+  const hashedPassword = await (0, import_bcryptjs.hash)(senha, 8);
+  const userWithHashPassword = { email, senha: hashedPassword };
+  const createUsuarioUseCase = MakeCreateUsuarioUseCase();
+  const user = await createUsuarioUseCase.handler(userWithHashPassword);
+  return rep.code(201).send({ username: user?.email });
 }
 
-// src/user-cases/find-with-person.ts
-var FindWithPersonUserCase = class {
-  constructor(userRepo) {
-    this.userRepo = userRepo;
-  }
-  async handler(userId) {
-    return this.userRepo.findWithPerson(userId);
+// src/user-cases/erros/invalid-creadential-error.ts
+var InvalidCrendtialsError = class extends Error {
+  constructor() {
+    super("username or password incorrect");
   }
 };
 
-// src/http/controllers/user/find.ts
-var import_zod3 = require("zod");
-async function findUser(req, rep) {
-  const resgisterParameterSchema = import_zod3.z.object({
-    id: import_zod3.z.coerce.number()
-  });
-  const { id } = resgisterParameterSchema.parse(req.params);
-  try {
-    const userRepo = new UsuarioRepo();
-    const findWi = new FindWithPersonUserCase(userRepo);
-    const user = await findWi.handler(id);
-    return rep.status(200).send(user);
-  } catch (error) {
-    console.error("error" + error);
-    throw new Error(`Erro ${error}`);
+// src/user-cases/sign-use-case.ts
+var SigninUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
   }
+  async handler(email) {
+    const user = await this.repo.findByUsername(email);
+    if (!user)
+      throw new InvalidCrendtialsError();
+    return user;
+  }
+};
+
+// src/user-cases/factory/make-sign-use-case.ts
+function MakeSignUserCase() {
+  const repo = new UsuarioRepository();
+  const findOneUsuarioUseCase = new SigninUseCase(repo);
+  return findOneUsuarioUseCase;
+}
+
+// src/http/controllers/user/sign.ts
+var import_bcryptjs2 = require("bcryptjs");
+var import_zod3 = require("zod");
+async function siginin(req, rep) {
+  const registerBodySchema = import_zod3.z.object({
+    email: import_zod3.z.string(),
+    senha: import_zod3.z.string()
+  });
+  const { email, senha } = registerBodySchema.parse(req.body);
+  const signinUseCase = MakeSignUserCase();
+  const user = await signinUseCase.handler(email);
+  const doesPasswordMath = await (0, import_bcryptjs2.compare)(senha, user.senha);
+  if (!doesPasswordMath)
+    throw new InvalidCrendtialsError();
+  const token = await rep.jwtSign({ email });
+  return rep.status(200).send({ token });
 }
 
 // src/http/controllers/user/routes.ts
 async function userRoutes(app) {
-  app.get("/usuario/:id", findUser);
   app.post("/usuario", create);
+  app.post("/usuario/signin", siginin);
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

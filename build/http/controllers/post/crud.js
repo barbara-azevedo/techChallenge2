@@ -16,19 +16,141 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __decorateClass = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp(target, key, result);
+  return result;
+};
 
 // src/http/controllers/post/crud.ts
 var crud_exports = {};
 __export(crud_exports, {
   createPost: () => createPost,
-  findPostAll: () => findPostAll,
-  findPostId: () => findPostId,
+  findAllPost: () => findAllPost,
+  findOnePost: () => findOnePost,
   findSearchPost: () => findSearchPost,
-  findSearchPostAndAutor: () => findSearchPostAndAutor,
   removePost: () => removePost,
   updatePost: () => updatePost
 });
 module.exports = __toCommonJS(crud_exports);
+
+// src/entities/post.entities.ts
+var import_typeorm = require("typeorm");
+var Post = class {
+  constructor() {
+  }
+};
+__decorateClass([
+  (0, import_typeorm.PrimaryGeneratedColumn)("increment", {
+    name: "id_post"
+  })
+], Post.prototype, "id_post", 2);
+__decorateClass([
+  (0, import_typeorm.Column)({
+    name: "titulo",
+    type: "varchar"
+  })
+], Post.prototype, "titulo", 2);
+__decorateClass([
+  (0, import_typeorm.Column)({
+    name: "conteudo",
+    type: "varchar"
+  })
+], Post.prototype, "conteudo", 2);
+__decorateClass([
+  (0, import_typeorm.Column)({
+    name: "dt_criacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Post.prototype, "dtCriacao", 2);
+__decorateClass([
+  (0, import_typeorm.Column)({
+    name: "dt_modificacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Post.prototype, "dtModificacao", 2);
+__decorateClass([
+  (0, import_typeorm.Column)({
+    name: "id_autor",
+    type: "int"
+  })
+], Post.prototype, "id_autor", 2);
+Post = __decorateClass([
+  (0, import_typeorm.Entity)({
+    name: "post"
+  })
+], Post);
+
+// src/lib/typeorm/typeorm.ts
+var import_typeorm4 = require("typeorm");
+
+// src/entities/autor.entities.ts
+var import_typeorm2 = require("typeorm");
+var Autor = class {
+  constructor() {
+  }
+};
+__decorateClass([
+  (0, import_typeorm2.PrimaryGeneratedColumn)("increment", {
+    name: "id_autor"
+  })
+], Autor.prototype, "id_autor", 2);
+__decorateClass([
+  (0, import_typeorm2.Column)({
+    name: "nome",
+    type: "varchar"
+  })
+], Autor.prototype, "nome", 2);
+__decorateClass([
+  (0, import_typeorm2.Column)({
+    name: "dt_criacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Autor.prototype, "dtCriacao", 2);
+__decorateClass([
+  (0, import_typeorm2.Column)({
+    name: "dt_modificacao",
+    type: "timestamp without time zone",
+    default: () => "CURRENT_TIMESTAMP"
+  })
+], Autor.prototype, "dtModificacao", 2);
+Autor = __decorateClass([
+  (0, import_typeorm2.Entity)({
+    name: "autor"
+  })
+], Autor);
+
+// src/entities/usuario.entities.ts
+var import_typeorm3 = require("typeorm");
+var Usuario = class {
+  constructor(email, senha) {
+    this.email = email;
+    this.senha = senha;
+  }
+};
+__decorateClass([
+  (0, import_typeorm3.PrimaryColumn)({
+    name: "email",
+    type: "varchar"
+  })
+], Usuario.prototype, "email", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "senha",
+    type: "varchar"
+  })
+], Usuario.prototype, "senha", 2);
+Usuario = __decorateClass([
+  (0, import_typeorm3.Entity)({
+    name: "usuario"
+  })
+], Usuario);
 
 // env/index.ts
 var import_config = require("dotenv/config");
@@ -40,7 +162,8 @@ var envSchema = import_zod.z.object({
   DATABASE_HOST: import_zod.z.string(),
   DATABASE_NAME: import_zod.z.string(),
   DATABASE_PASSWORD: import_zod.z.string(),
-  DATABASE_PORT: import_zod.z.coerce.number()
+  DATABASE_PORT: import_zod.z.coerce.number(),
+  SECRET_JWT: import_zod.z.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -49,92 +172,63 @@ if (!_env.success) {
 }
 var env = _env.data;
 
-// src/lib/db/pg.ts
-var import_pg = require("pg");
-var CONFIG = {
-  user: env.DATABASE_USER,
+// src/lib/typeorm/typeorm.ts
+var appDataBase = new import_typeorm4.DataSource({
+  type: "postgres",
   host: env.DATABASE_HOST,
-  database: env.DATABASE_NAME,
+  port: env.DATABASE_PORT,
+  username: env.DATABASE_USER,
   password: env.DATABASE_PASSWORD,
-  port: env.DATABASE_PORT
-};
-var db = class {
-  constructor() {
-    this.pool = new import_pg.Pool(CONFIG);
-    this.connection();
-  }
-  async connection() {
-    try {
-      this.client = await this.pool.connect();
-    } catch (error) {
-      console.log(`Error connection database: ${error} `);
-      throw new Error(`Error connection database: ${error} `);
-    }
-  }
-  get clientInstance() {
-    return this.client;
-  }
-};
-var database = new db();
+  database: env.DATABASE_NAME,
+  entities: [Autor, Post, Usuario],
+  logging: env.NODE_ENV === "development"
+});
+appDataBase.initialize().then(() => {
+  console.log("Database connected typeorm");
+}).catch((error) => {
+  console.error(`Erro connected typeorm: ${error}`);
+});
 
-// src/repositories/post.repository.ts
+// src/repositories/typeorm/post.repository.typeorm.ts
+var import_typeorm6 = require("typeorm");
 var PostRepository = class {
-  async createPost({ titulo, conteudo, id_autor }) {
-    const result = await database.clientInstance?.query(
-      `INSERT INTO "post" (titulo, conteudo, dt_criacao, dt_modificacao, id_autor) 
-                VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [titulo, conteudo, /* @__PURE__ */ new Date(), /* @__PURE__ */ new Date(), id_autor]
-    );
-    return result?.rows[0];
+  constructor() {
+    this.repo = appDataBase.getRepository(Post);
   }
-  async update({ id_post, titulo, conteudo, id_autor }) {
-    const result = await database.clientInstance?.query(
-      `UPDATE "post" set titulo=$1, conteudo=$2, dt_modificacao=$3, id_autor=$4 
-                    WHERE "post".id_post = $5`,
-      [titulo, conteudo, /* @__PURE__ */ new Date(), id_autor, id_post]
-    );
-    return result?.rows[0];
+  createPost(post) {
+    post.dtCriacao = /* @__PURE__ */ new Date();
+    post.dtModificacao = /* @__PURE__ */ new Date();
+    return this.repo.save(post);
   }
-  async remove(id_post) {
-    const result = await database.clientInstance?.query(
-      `DELETE FROM "post" WHERE "post".id_post = $1`,
-      [id_post]
-    );
-    return result?.rows[0];
+  updatePost(post) {
+    return this.repo.save(post);
   }
-  //------------------------------FINDs
-  async findPostAll() {
-    const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" 
-                INNER JOIN "autor" ON "post".id_autor = "autor".id_autor 
-                ORDER BY "post".dt_criacao DESC`
-    );
-    return result?.rows;
+  async removePost(id) {
+    await this.repo.delete(id);
   }
-  async findPostId(postId) {
-    const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" LEFT JOIN "autor" ON "post".id_autor = "autor".id_autor 
-                WHERE "post".id_post = $1`,
-      [postId]
-    );
-    return result?.rows[0];
+  async findAllPost(page, limit) {
+    return this.repo.find({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        dtCriacao: "DESC"
+      }
+    });
   }
-  async findPostSearch(search) {
-    const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" LEFT JOIN "autor" ON "post".id_autor = "autor".id_autor 
-                WHERE "post".conteudo like '%'||$1||'%' ORDER BY "post".dt_criacao DESC`,
-      [search]
-    );
-    return result?.rows;
+  async findOnePost(id) {
+    console.log("passou " + id);
+    return this.repo.findOne({
+      where: { id_post: id }
+    });
   }
-  async findPostAndAutorSearch(search) {
-    const result = await database.clientInstance?.query(
-      `SELECT * FROM "post" INNER JOIN "autor" ON "post".id_autor = "autor".id_autor
-                WHERE "autor".nome like '%'||$1||'%' 
-                ORDER BY "post".dt_criacao DESC`,
-      [search]
-    );
-    return result?.rows;
+  async findSearchPost(search) {
+    return this.repo.find({
+      where: [
+        {
+          conteudo: (0, import_typeorm6.Like)(`%${search}%`)
+        }
+      ]
+    });
   }
 };
 
@@ -162,7 +256,7 @@ var UpdatePostUseCase = class {
     this.repo = repo;
   }
   async handler(post) {
-    return this.repo.update(post);
+    return this.repo.updatePost(post);
   }
 };
 var RemovePostUseCase = class {
@@ -170,23 +264,23 @@ var RemovePostUseCase = class {
     this.repo = repo;
   }
   async handler(id) {
-    return this.repo.remove(id);
+    return this.repo.removePost(id);
   }
 };
 var FindAllPostUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
-  async handler() {
-    return this.repo.findPostAll();
+  async handler(page, limit) {
+    return this.repo.findAllPost(page, limit);
   }
 };
-var FindIdPostUseCase = class {
+var FindOnePostUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(id) {
-    const p = await this.repo.findPostId(id);
+    const p = await this.repo.findOnePost(id);
     if (!p) throw new ResourcesNotFoundErrors();
     return p;
   }
@@ -196,53 +290,40 @@ var FindSearchPostUseCase = class {
     this.repo = repo;
   }
   async handler(search) {
-    return this.repo.findPostSearch(search);
-  }
-};
-var FindSearchPostAndAutorUseCase = class {
-  constructor(repo) {
-    this.repo = repo;
-  }
-  async handler(search) {
-    return this.repo.findPostAndAutorSearch(search);
+    return this.repo.findSearchPost(search);
   }
 };
 
-// src/user-cases/factory/make-crud-post-use-case.ts
-function MakeCrudCreatePost() {
+// src/user-cases/factory/make-crud-post-use-case copy.ts
+function MakeCreatePost() {
   const repo = new PostRepository();
   const createPostUseCase = new CreatePostUseCase(repo);
   return createPostUseCase;
 }
-function MakeCrudUpdatePost() {
+function MakeUpdatePost() {
   const repo = new PostRepository();
   const updatePostUseCase = new UpdatePostUseCase(repo);
   return updatePostUseCase;
 }
-function MakeCrudRemoverPost() {
+function MakeRemovePost() {
   const repo = new PostRepository();
   const removePostUseCase = new RemovePostUseCase(repo);
   return removePostUseCase;
 }
-function MakeCrudFindIdPost() {
-  const repo = new PostRepository();
-  const findIdPostUseCase = new FindIdPostUseCase(repo);
-  return findIdPostUseCase;
-}
-function MakeCrudFindAlldPost() {
+function MakeFindAllPost() {
   const repo = new PostRepository();
   const findAllPostUseCase = new FindAllPostUseCase(repo);
   return findAllPostUseCase;
 }
-function MakeCrudFindSearchdPost() {
+function MakeFindOnePost() {
+  const repo = new PostRepository();
+  const findOnePostUseCase = new FindOnePostUseCase(repo);
+  return findOnePostUseCase;
+}
+function MakeFindSearchPost() {
   const repo = new PostRepository();
   const findSearchPostUseCase = new FindSearchPostUseCase(repo);
   return findSearchPostUseCase;
-}
-function MakeCrudFindSearchdPostAndAutor() {
-  const repo = new PostRepository();
-  const findSearchPostAndAutorUseCase = new FindSearchPostAndAutorUseCase(repo);
-  return findSearchPostAndAutorUseCase;
 }
 
 // src/http/controllers/post/crud.ts
@@ -254,7 +335,7 @@ async function createPost(req, rep) {
     id_autor: import_zod2.z.coerce.number()
   });
   const { titulo, conteudo, id_autor } = registerBodySchema.parse(req.body);
-  const createPostUseCase = MakeCrudCreatePost();
+  const createPostUseCase = MakeCreatePost();
   const p = await createPostUseCase.handler({ titulo, conteudo, id_autor });
   return rep.code(201).send(p);
 }
@@ -273,7 +354,7 @@ async function updatePost(req, rep) {
   if (id_post === void 0 || id_post === 0) {
     return rep.code(400).send("Informe o id do post para altera\xE7\xE3o");
   }
-  const updatePostUseCase = MakeCrudUpdatePost();
+  const updatePostUseCase = MakeUpdatePost();
   const a = await updatePostUseCase.handler({ id_post, titulo, conteudo, id_autor });
   return rep.code(200).send(a);
 }
@@ -285,25 +366,30 @@ async function removePost(req, rep) {
   if (id_post === void 0 || id_post === 0) {
     return rep.code(500).send("Informe o id do post para exclus\xE3o");
   }
-  const removePostUseCase = MakeCrudRemoverPost();
-  const finIdPostUseCase = MakeCrudFindIdPost();
+  const removePostUseCase = MakeRemovePost();
+  const finIdPostUseCase = MakeFindOnePost();
   const post = await finIdPostUseCase.handler(id_post);
   if (post?.id_post === void 0)
     return rep.status(404).send("Objeto n\xE3o encontrado");
   removePostUseCase.handler(id_post);
   return rep.code(200).send("success");
 }
-async function findPostAll(req, rep) {
-  const postRepo = MakeCrudFindAlldPost();
-  const post = await postRepo.handler();
+async function findAllPost(req, rep) {
+  const registerQuerySchema = import_zod2.z.object({
+    page: import_zod2.z.coerce.number().default(1),
+    limit: import_zod2.z.coerce.number().default(10)
+  });
+  const { page, limit } = registerQuerySchema.parse(req.query);
+  const postRepo = MakeFindAllPost();
+  const post = await postRepo.handler(page, limit);
   return rep.status(200).send({ post });
 }
-async function findPostId(req, rep) {
+async function findOnePost(req, rep) {
   const resgisterParameterSchema = import_zod2.z.object({
     id_post: import_zod2.z.coerce.number()
   });
   const { id_post } = resgisterParameterSchema.parse(req.params);
-  const postRepo = MakeCrudFindIdPost();
+  const postRepo = MakeFindOnePost();
   const post = await postRepo.handler(id_post);
   return rep.status(200).send({ post });
 }
@@ -312,18 +398,7 @@ async function findSearchPost(req, rep) {
     search: import_zod2.z.coerce.string()
   });
   const { search } = resgisterParameterSchema.parse(req.params);
-  const postRepo = MakeCrudFindSearchdPost();
-  const post = await postRepo.handler(search);
-  if (post === void 0 || post.length === 0)
-    return rep.status(404).send("Nenhum valor encontrado");
-  return rep.status(200).send({ post });
-}
-async function findSearchPostAndAutor(req, rep) {
-  const resgisterParameterSchema = import_zod2.z.object({
-    search: import_zod2.z.coerce.string()
-  });
-  const { search } = resgisterParameterSchema.parse(req.params);
-  const postRepo = MakeCrudFindSearchdPostAndAutor();
+  const postRepo = MakeFindSearchPost();
   const post = await postRepo.handler(search);
   if (post === void 0 || post.length === 0)
     return rep.status(404).send("Nenhum valor encontrado");
@@ -332,10 +407,9 @@ async function findSearchPostAndAutor(req, rep) {
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   createPost,
-  findPostAll,
-  findPostId,
+  findAllPost,
+  findOnePost,
   findSearchPost,
-  findSearchPostAndAutor,
   removePost,
   updatePost
 });

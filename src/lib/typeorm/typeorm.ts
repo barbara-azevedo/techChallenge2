@@ -1,7 +1,8 @@
 import { DataSource } from "typeorm";
 
-import { Autor2 } from "@/entities/autor.entities.typeorm";
-import { Post2 } from "@/entities/post.entities.typeorm";
+import { Autor } from "@/entities/autor.entities";
+import { Post } from "@/entities/post.entities";
+import { Usuario } from "@/entities/usuario.entities";
 import { env } from "env";
 
 export const appDataBase = new DataSource({
@@ -11,7 +12,7 @@ export const appDataBase = new DataSource({
     username: env.DATABASE_USER,
     password: env.DATABASE_PASSWORD,
     database: env.DATABASE_NAME,
-    entities: [Autor2, Post2],
+    entities: [Autor, Post, Usuario],
     logging: env.NODE_ENV === 'development',
 });
 

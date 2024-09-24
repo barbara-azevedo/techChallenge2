@@ -31,6 +31,7 @@ __export(make_crud_autor2_use_case_exports, {
   MakeCrudCreateAutorTypeorm: () => MakeCrudCreateAutorTypeorm,
   MakeCrudFindAlldAutorTypeorm: () => MakeCrudFindAlldAutorTypeorm,
   MakeCrudFindIdAutorTypeorm: () => MakeCrudFindIdAutorTypeorm,
+  MakeCrudFindSearchdAutorTypeorm: () => MakeCrudFindSearchdAutorTypeorm,
   MakeCrudRemoverAutorTypeorm: () => MakeCrudRemoverAutorTypeorm,
   MakeCrudUpdateAutorTypeorm: () => MakeCrudUpdateAutorTypeorm
 });
@@ -135,7 +136,8 @@ var envSchema = import_zod.z.object({
   DATABASE_HOST: import_zod.z.string(),
   DATABASE_NAME: import_zod.z.string(),
   DATABASE_PASSWORD: import_zod.z.string(),
-  DATABASE_PORT: import_zod.z.coerce.number()
+  DATABASE_PORT: import_zod.z.coerce.number(),
+  SECRET_JWT: import_zod.z.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -162,32 +164,42 @@ appDataBase.initialize().then(() => {
 });
 
 // src/repositories/typeorm/autor.repository.typeorm.ts
+var import_typeorm5 = require("typeorm");
 var AutorTypeormRepository = class {
   constructor() {
     this.repo = appDataBase.getRepository(Autor2);
   }
-  createAutorTypeorm(autor) {
+  async createAutorTypeorm(autor) {
     return this.repo.save(autor);
   }
-  updateAutorTypeorm(autor) {
+  async updateAutorTypeorm(autor) {
     return this.repo.save(autor);
   }
-  removeAutorTypeorm(autor) {
-    return this.repo.remove(autor);
+  async removeAutorTypeorm(autor) {
+    await this.repo.delete(autor);
   }
-  findAllAutorTypeorm() {
+  async findAllAutorTypeorm(page, limit) {
     return this.repo.find({
+      skip: (page - 1) * limit,
+      take: limit,
       order: {
         dtCriacao: "DESC"
       }
     });
   }
-  findOneAutorTypeorm(id) {
-    return this.repo.findOne(
-      {
-        where: { id_autor: id }
-      }
-    );
+  async findOneAutorTypeorm(id) {
+    return this.repo.findOne({
+      where: { id_autor: id }
+    });
+  }
+  async findAutorSearchNomeTypeorm(nome) {
+    return this.repo.find({
+      where: [
+        {
+          nome: (0, import_typeorm5.Like)(`%${nome}%`)
+        }
+      ]
+    });
   }
 };
 
@@ -226,15 +238,15 @@ var RemoveAutorTypeormUseCase = class {
     this.repo = repo;
   }
   async handler(autor) {
-    return this.repo.removeAutorTypeorm(autor);
+    await this.repo.removeAutorTypeorm(autor);
   }
 };
 var FindAllAutorTypeormUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
-  async handler() {
-    return this.repo.findAllAutorTypeorm();
+  async handler(page, limit) {
+    return this.repo.findAllAutorTypeorm(page, limit);
   }
 };
 var FindOneAutorTypeormUseCase = class {
@@ -243,6 +255,14 @@ var FindOneAutorTypeormUseCase = class {
   }
   async handler(id) {
     return this.repo.findOneAutorTypeorm(id);
+  }
+};
+var FindSearchAutorTypeormUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler(search) {
+    return this.repo.findAutorSearchNomeTypeorm(search);
   }
 };
 
@@ -272,11 +292,17 @@ function MakeCrudFindIdAutorTypeorm() {
   const findIdAutorUseCase = new FindOneAutorTypeormUseCase(repo);
   return findIdAutorUseCase;
 }
+function MakeCrudFindSearchdAutorTypeorm() {
+  const repo = new AutorTypeormRepository();
+  const findSearchAutorUseCase = new FindSearchAutorTypeormUseCase(repo);
+  return findSearchAutorUseCase;
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   MakeCrudCreateAutorTypeorm,
   MakeCrudFindAlldAutorTypeorm,
   MakeCrudFindIdAutorTypeorm,
+  MakeCrudFindSearchdAutorTypeorm,
   MakeCrudRemoverAutorTypeorm,
   MakeCrudUpdateAutorTypeorm
 });

@@ -1,52 +1,52 @@
-import { IAutor } from "@/entities/models/autor.interface.typeorm";
-import { IAutorTypeormRepository } from "@/repositories/autor.repository.interface.typeorm";
+
+import { IAutor } from "@/entities/models/autor.interface";
+import { IAutorRepository } from "@/repositories/autor.repository.interface";
 import { ResourcesNotFoundErrors } from "./erros/resource-not-found-erros";
 
-export class CreateAutorTypeormUseCase {
-    constructor(private repo: IAutorTypeormRepository) { }
+export class CreateAutorUseCase {
+    constructor(private repo: IAutorRepository) { }
     async handler(autor: IAutor): Promise<IAutor | undefined> {
         autor.dtCriacao = new Date();
         autor.dtModificacao = new Date();
-        const p = await this.repo.createAutorTypeorm(autor);
+        const p = await this.repo.createAutor(autor);
         if (!p)
             throw new ResourcesNotFoundErrors();
         return p;
     }
 }
 
-export class UpdateAutorTypeormUseCase {
-    constructor(private repo: IAutorTypeormRepository) { }
+export class UpdateAutorUseCase {
+    constructor(private repo: IAutorRepository) { }
     async handler(autor: IAutor): Promise<IAutor | undefined> {
         autor.dtModificacao = new Date();
-        return this.repo.updateAutorTypeorm(autor);
+        return this.repo.updateAutor(autor);
     }
 }
 
-export class RemoveAutorTypeormUseCase {
-    constructor(private repo: IAutorTypeormRepository) { }
+export class RemoveAutorUseCase {
+    constructor(private repo: IAutorRepository) { }
     async handler(autor: IAutor): Promise<void> {
-        await this.repo.removeAutorTypeorm(autor);
+        await this.repo.removeAutor(autor);
     }
 }
 
-export class FindAllAutorTypeormUseCase {
-    constructor(private repo: IAutorTypeormRepository) { }
+export class FindAllAutorUseCase {
+    constructor(private repo: IAutorRepository) { }
     async handler(page: number, limit: number): Promise<IAutor[] | undefined> {
-        return this.repo.findAllAutorTypeorm(page, limit);
+        return this.repo.findAllAutor(page, limit);
     }
 }
 
-export class FindOneAutorTypeormUseCase {
-    constructor(private repo: IAutorTypeormRepository) { }
+export class FindOneAutorUseCase {
+    constructor(private repo: IAutorRepository) { }
     async handler(id: number): Promise<IAutor | null> {
-        return this.repo.findOneAutorTypeorm(id);
+        return this.repo.findOneAutor(id);
     }
 }
 
-
-export class FindSearchAutorTypeormUseCase {
-    constructor(private repo: IAutorTypeormRepository) { }
+export class FindSearchAutorUseCase {
+    constructor(private repo: IAutorRepository) { }
     async handler(search: string): Promise<IAutor[] | undefined> {
-        return this.repo.findAutorSearchNomeTypeorm(search);
+        return this.repo.findAutorSearchNome(search);
     }
 }

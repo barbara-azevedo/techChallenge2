@@ -1,43 +1,41 @@
-import { Post } from "@/entities/post.entities";
-import { IPostRepository } from "@/repositories/post.interface";
+import { IPost } from "@/entities/models/post.interface";
+import { IPostRepository } from "@/repositories/post.repository.interface";
 import { ResourcesNotFoundErrors } from "./erros/resource-not-found-erros";
 
 export class CreatePostUseCase {
     constructor(private repo: IPostRepository) { }
-    async handler(post: Post): Promise<Post | undefined> {
-
+    async handler(post: IPost): Promise<IPost | undefined> {
         const p = await this.repo.createPost(post);
         if (!p)
             throw new ResourcesNotFoundErrors();
         return p;
     }
 }
-
 export class UpdatePostUseCase {
     constructor(private repo: IPostRepository) { }
-    async handler(post: Post): Promise<Post | undefined> {
-        return this.repo.update(post);
+    async handler(post: IPost): Promise<IPost | undefined> {
+        return this.repo.updatePost(post);
     }
 }
 
 export class RemovePostUseCase {
     constructor(private repo: IPostRepository) { }
-    async handler(id: number): Promise<Post | undefined> {
-        return this.repo.remove(id);
+    async handler(id: number): Promise<void> {
+        return this.repo.removePost(id);
     }
 }
 
 export class FindAllPostUseCase {
     constructor(private repo: IPostRepository) { }
-    async handler(): Promise<Post[] | undefined> {
-        return this.repo.findPostAll();
+    async handler(page: number, limit: number): Promise<IPost[] | undefined> {
+        return this.repo.findAllPost(page, limit);
     }
 }
 
-export class FindIdPostUseCase {
+export class FindOnePostUseCase {
     constructor(private repo: IPostRepository) { }
-    async handler(id: number): Promise<Post | undefined> {
-        const p = await this.repo.findPostId(id);
+    async handler(id: number): Promise<IPost | undefined> {
+        const p = await this.repo.findOnePost(id);
         if (!p) throw new ResourcesNotFoundErrors();
         return p;
     }
@@ -45,14 +43,7 @@ export class FindIdPostUseCase {
 
 export class FindSearchPostUseCase {
     constructor(private repo: IPostRepository) { }
-    async handler(search: string): Promise<Post[] | undefined> {
-        return this.repo.findPostSearch(search);
-    }
-}
-
-export class FindSearchPostAndAutorUseCase {
-    constructor(private repo: IPostRepository) { }
-    async handler(search: string): Promise<Post[] | undefined> {
-        return this.repo.findPostAndAutorSearch(search);
+    async handler(search: string): Promise<IPost[] | undefined> {
+        return this.repo.findSearchPost(search);
     }
 }

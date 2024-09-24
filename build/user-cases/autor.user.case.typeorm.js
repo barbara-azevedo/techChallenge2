@@ -20,11 +20,12 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/user-cases/autor.user.case.typeorm.ts
 var autor_user_case_typeorm_exports = {};
 __export(autor_user_case_typeorm_exports, {
-  CreateAutorTypeormUseCase: () => CreateAutorTypeormUseCase,
-  FindAllAutorTypeormUseCase: () => FindAllAutorTypeormUseCase,
-  FindOneAutorTypeormUseCase: () => FindOneAutorTypeormUseCase,
-  RemoveAutorTypeormUseCase: () => RemoveAutorTypeormUseCase,
-  UpdateAutorTypeormUseCase: () => UpdateAutorTypeormUseCase
+  CreateAutorUseCase: () => CreateAutorUseCase,
+  FindAllAutorUseCase: () => FindAllAutorUseCase,
+  FindOneAutorUseCase: () => FindOneAutorUseCase,
+  FindSearchAutorUseCase: () => FindSearchAutorUseCase,
+  RemoveAutorUseCase: () => RemoveAutorUseCase,
+  UpdateAutorUseCase: () => UpdateAutorUseCase
 });
 module.exports = __toCommonJS(autor_user_case_typeorm_exports);
 
@@ -36,57 +37,66 @@ var ResourcesNotFoundErrors = class extends Error {
 };
 
 // src/user-cases/autor.user.case.typeorm.ts
-var CreateAutorTypeormUseCase = class {
+var CreateAutorUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(autor) {
     autor.dtCriacao = /* @__PURE__ */ new Date();
     autor.dtModificacao = /* @__PURE__ */ new Date();
-    const p = await this.repo.createAutorTypeorm(autor);
+    const p = await this.repo.createAutor(autor);
     if (!p)
       throw new ResourcesNotFoundErrors();
     return p;
   }
 };
-var UpdateAutorTypeormUseCase = class {
+var UpdateAutorUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(autor) {
     autor.dtModificacao = /* @__PURE__ */ new Date();
-    return this.repo.updateAutorTypeorm(autor);
+    return this.repo.updateAutor(autor);
   }
 };
-var RemoveAutorTypeormUseCase = class {
+var RemoveAutorUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(autor) {
-    return this.repo.removeAutorTypeorm(autor);
+    await this.repo.removeAutor(autor);
   }
 };
-var FindAllAutorTypeormUseCase = class {
+var FindAllAutorUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
-  async handler() {
-    return this.repo.findAllAutorTypeorm();
+  async handler(page, limit) {
+    return this.repo.findAllAutor(page, limit);
   }
 };
-var FindOneAutorTypeormUseCase = class {
+var FindOneAutorUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(id) {
-    return this.repo.findOneAutorTypeorm(id);
+    return this.repo.findOneAutor(id);
+  }
+};
+var FindSearchAutorUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler(search) {
+    return this.repo.findAutorSearchNome(search);
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  CreateAutorTypeormUseCase,
-  FindAllAutorTypeormUseCase,
-  FindOneAutorTypeormUseCase,
-  RemoveAutorTypeormUseCase,
-  UpdateAutorTypeormUseCase
+  CreateAutorUseCase,
+  FindAllAutorUseCase,
+  FindOneAutorUseCase,
+  FindSearchAutorUseCase,
+  RemoveAutorUseCase,
+  UpdateAutorUseCase
 });

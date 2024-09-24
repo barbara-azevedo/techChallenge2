@@ -1,28 +1,29 @@
-import { Autor2 } from "@/entities/autor.entities.typeorm";
-import { IAutor } from "@/entities/models/autor.interface.typeorm";
+
+import { Autor } from "@/entities/autor.entities";
+import { IAutor } from "@/entities/models/autor.interface";
 import { appDataBase } from "@/lib/typeorm/typeorm";
 import { Like, Repository } from "typeorm";
-import { IAutorTypeormRepository } from "../autor.repository.interface.typeorm";
+import { IAutorRepository } from "../autor.repository.interface";
 
-export class AutorTypeormRepository implements IAutorTypeormRepository {
+export class AutorRepository implements IAutorRepository {
     private repo: Repository<IAutor>
     constructor() {
-        this.repo = appDataBase.getRepository(Autor2);
+        this.repo = appDataBase.getRepository(Autor);
     }
 
-    async createAutorTypeorm(autor: IAutor): Promise<IAutor | undefined> {
+    async createAutor(autor: IAutor): Promise<IAutor | undefined> {
         return this.repo.save(autor);
     }
 
-    async updateAutorTypeorm(autor: IAutor): Promise<IAutor | undefined> {
+    async updateAutor(autor: IAutor): Promise<IAutor | undefined> {
         return this.repo.save(autor);
     }
 
-    async removeAutorTypeorm(autor: IAutor): Promise<void> {
+    async removeAutor(autor: IAutor): Promise<void> {
         await this.repo.delete(autor)
     }
 
-    async findAllAutorTypeorm(page: number, limit: number): Promise<IAutor[] | undefined> {
+    async findAllAutor(page: number, limit: number): Promise<IAutor[] | undefined> {
         return this.repo.find({
             skip: (page - 1) * limit,
             take: limit,
@@ -32,13 +33,13 @@ export class AutorTypeormRepository implements IAutorTypeormRepository {
         });
     }
 
-    async findOneAutorTypeorm(id: number): Promise<IAutor | null> {
+    async findOneAutor(id: number): Promise<IAutor | null> {
         return this.repo.findOne({
             where: { id_autor: id }
         })
     }
 
-    async findAutorSearchNomeTypeorm(nome: string): Promise<IAutor[] | undefined> {
+    async findAutorSearchNome(nome: string): Promise<IAutor[] | undefined> {
         return this.repo.find({
             where: [
                 {

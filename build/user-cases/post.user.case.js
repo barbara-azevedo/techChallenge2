@@ -22,8 +22,7 @@ var post_user_case_exports = {};
 __export(post_user_case_exports, {
   CreatePostUseCase: () => CreatePostUseCase,
   FindAllPostUseCase: () => FindAllPostUseCase,
-  FindIdPostUseCase: () => FindIdPostUseCase,
-  FindSearchPostAndAutorUseCase: () => FindSearchPostAndAutorUseCase,
+  FindOnePostUseCase: () => FindOnePostUseCase,
   FindSearchPostUseCase: () => FindSearchPostUseCase,
   RemovePostUseCase: () => RemovePostUseCase,
   UpdatePostUseCase: () => UpdatePostUseCase
@@ -54,7 +53,7 @@ var UpdatePostUseCase = class {
     this.repo = repo;
   }
   async handler(post) {
-    return this.repo.update(post);
+    return this.repo.updatePost(post);
   }
 };
 var RemovePostUseCase = class {
@@ -62,23 +61,23 @@ var RemovePostUseCase = class {
     this.repo = repo;
   }
   async handler(id) {
-    return this.repo.remove(id);
+    return this.repo.removePost(id);
   }
 };
 var FindAllPostUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
-  async handler() {
-    return this.repo.findPostAll();
+  async handler(page, limit) {
+    return this.repo.findAllPost(page, limit);
   }
 };
-var FindIdPostUseCase = class {
+var FindOnePostUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
   async handler(id) {
-    const p = await this.repo.findPostId(id);
+    const p = await this.repo.findOnePost(id);
     if (!p) throw new ResourcesNotFoundErrors();
     return p;
   }
@@ -88,23 +87,14 @@ var FindSearchPostUseCase = class {
     this.repo = repo;
   }
   async handler(search) {
-    return this.repo.findPostSearch(search);
-  }
-};
-var FindSearchPostAndAutorUseCase = class {
-  constructor(repo) {
-    this.repo = repo;
-  }
-  async handler(search) {
-    return this.repo.findPostAndAutorSearch(search);
+    return this.repo.findSearchPost(search);
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CreatePostUseCase,
   FindAllPostUseCase,
-  FindIdPostUseCase,
-  FindSearchPostAndAutorUseCase,
+  FindOnePostUseCase,
   FindSearchPostUseCase,
   RemovePostUseCase,
   UpdatePostUseCase

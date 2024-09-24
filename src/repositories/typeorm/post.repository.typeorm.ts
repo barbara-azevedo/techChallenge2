@@ -1,24 +1,58 @@
-import { Autor2 } from "@/entities/autor.entities.typeorm";
-import { IAutor } from "@/entities/models/autor.interface.typeorm";
-import { IPost } from "@/entities/models/post.interface.typeorm";
-import { Post2 } from "@/entities/post.entities.typeorm";
+import { IAutor } from "@/entities/models/autor.interface";
+import { IPost } from "@/entities/models/post.interface";
+import { Post } from "@/entities/post.entities";
 import { appDataBase } from "@/lib/typeorm/typeorm";
-import { Repository } from "typeorm";
-import { IPostTypeormRepository } from "../post.repository.interface.typeorm";
+import { Like, Repository } from "typeorm";
+import { IPostRepository } from "../post.repository.interface";
 
-export class PostTypeormRepository implements IPostTypeormRepository {
-    private repo: Repository<Post2>
+
+export class PostRepository implements IPostRepository {
+    private repo: Repository<IPost>
     constructor() {
-        this.repo = appDataBase.getRepository(Post2);
+        this.repo = appDataBase.getRepository(Post);
     }
-   
-    createPostTypeorm(post: IPost): Promise<IPost & IAutor | undefined> {
+ 
+
+    createPost(post: IPost): Promise<IPost & IAutor | undefined> {
         post.dtCriacao = new Date();
         post.dtModificacao = new Date();
         return this.repo.save(post);
     }
 
-    update(post: Post2): Promise<(Post2 & Autor2) | undefined> {
+    updatePost(post: IPost): Promise<(IPost & IAutor) | undefined> {
         return this.repo.save(post);
     }
+
+    async removePost(id: number): Promise<void> {
+        await this.repo.delete(id);
+    }
+
+    async findAllPost(page: number, limit: number): Promise<(IPost[] & IAutor) | undefined> {
+        return this.repo.find({
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                dtCriacao: "DESC",
+            }
+        });
+    }
+
+    async findOnePost(id: number): Promise<(IPost & IAutor) | null> {
+        console.log('passou '+id);
+        
+        return this.repo.findOne({
+            where: { id_post: id }
+        })
+    }
+    
+    async findSearchPost(search: string): Promise<(IPost[] & IAutor) | undefined> {
+        return this.repo.find({
+            where: [
+                {
+                    conteudo: Like(`%${search}%`)
+                },
+            ],
+        });
+    }
+
 }

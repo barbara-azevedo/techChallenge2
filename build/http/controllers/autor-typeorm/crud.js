@@ -31,6 +31,7 @@ __export(crud_exports, {
   createAutorTypeorm: () => createAutorTypeorm,
   findAutorAllTypeorm: () => findAutorAllTypeorm,
   findAutorIdTypeorm: () => findAutorIdTypeorm,
+  findSearchAutorTypeorm: () => findSearchAutorTypeorm,
   removeAutorTypeorm: () => removeAutorTypeorm,
   updateAutorTypeorm: () => updateAutorTypeorm
 });
@@ -135,7 +136,8 @@ var envSchema = import_zod.z.object({
   DATABASE_HOST: import_zod.z.string(),
   DATABASE_NAME: import_zod.z.string(),
   DATABASE_PASSWORD: import_zod.z.string(),
-  DATABASE_PORT: import_zod.z.coerce.number()
+  DATABASE_PORT: import_zod.z.coerce.number(),
+  SECRET_JWT: import_zod.z.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -162,32 +164,42 @@ appDataBase.initialize().then(() => {
 });
 
 // src/repositories/typeorm/autor.repository.typeorm.ts
+var import_typeorm5 = require("typeorm");
 var AutorTypeormRepository = class {
   constructor() {
     this.repo = appDataBase.getRepository(Autor2);
   }
-  createAutorTypeorm(autor) {
+  async createAutorTypeorm(autor) {
     return this.repo.save(autor);
   }
-  updateAutorTypeorm(autor) {
+  async updateAutorTypeorm(autor) {
     return this.repo.save(autor);
   }
-  removeAutorTypeorm(autor) {
-    return this.repo.remove(autor);
+  async removeAutorTypeorm(autor) {
+    await this.repo.delete(autor);
   }
-  findAllAutorTypeorm() {
+  async findAllAutorTypeorm(page, limit) {
     return this.repo.find({
+      skip: (page - 1) * limit,
+      take: limit,
       order: {
         dtCriacao: "DESC"
       }
     });
   }
-  findOneAutorTypeorm(id) {
-    return this.repo.findOne(
-      {
-        where: { id_autor: id }
-      }
-    );
+  async findOneAutorTypeorm(id) {
+    return this.repo.findOne({
+      where: { id_autor: id }
+    });
+  }
+  async findAutorSearchNomeTypeorm(nome) {
+    return this.repo.find({
+      where: [
+        {
+          nome: (0, import_typeorm5.Like)(`%${nome}%`)
+        }
+      ]
+    });
   }
 };
 
@@ -226,15 +238,15 @@ var RemoveAutorTypeormUseCase = class {
     this.repo = repo;
   }
   async handler(autor) {
-    return this.repo.removeAutorTypeorm(autor);
+    await this.repo.removeAutorTypeorm(autor);
   }
 };
 var FindAllAutorTypeormUseCase = class {
   constructor(repo) {
     this.repo = repo;
   }
-  async handler() {
-    return this.repo.findAllAutorTypeorm();
+  async handler(page, limit) {
+    return this.repo.findAllAutorTypeorm(page, limit);
   }
 };
 var FindOneAutorTypeormUseCase = class {
@@ -243,6 +255,14 @@ var FindOneAutorTypeormUseCase = class {
   }
   async handler(id) {
     return this.repo.findOneAutorTypeorm(id);
+  }
+};
+var FindSearchAutorTypeormUseCase = class {
+  constructor(repo) {
+    this.repo = repo;
+  }
+  async handler(search) {
+    return this.repo.findAutorSearchNomeTypeorm(search);
   }
 };
 
@@ -271,6 +291,11 @@ function MakeCrudFindIdAutorTypeorm() {
   const repo = new AutorTypeormRepository();
   const findIdAutorUseCase = new FindOneAutorTypeormUseCase(repo);
   return findIdAutorUseCase;
+}
+function MakeCrudFindSearchdAutorTypeorm() {
+  const repo = new AutorTypeormRepository();
+  const findSearchAutorUseCase = new FindSearchAutorTypeormUseCase(repo);
+  return findSearchAutorUseCase;
 }
 
 // src/http/controllers/autor-typeorm/crud.ts
@@ -313,8 +338,14 @@ async function removeAutorTypeorm(req, rep) {
   return rep.code(200).send("success");
 }
 async function findAutorAllTypeorm(req, rep) {
+  const registerQuerySchema = import_zod2.z.object({
+    page: import_zod2.z.coerce.number().default(1),
+    limit: import_zod2.z.coerce.number().default(10)
+  });
+  const { page, limit } = registerQuerySchema.parse(req.query);
+  console.log(req.params);
   const AutorRepo = MakeCrudFindAlldAutorTypeorm();
-  const autor = await AutorRepo.handler();
+  const autor = await AutorRepo.handler(page, limit);
   return rep.status(200).send({ autor });
 }
 async function findAutorIdTypeorm(req, rep) {
@@ -326,11 +357,23 @@ async function findAutorIdTypeorm(req, rep) {
   const autor = await AutorRepo.handler(id);
   return rep.status(200).send({ autor });
 }
+async function findSearchAutorTypeorm(req, rep) {
+  const resgisterParameterSchema = import_zod2.z.object({
+    nome: import_zod2.z.coerce.string()
+  });
+  const { nome } = resgisterParameterSchema.parse(req.params);
+  const AutorRepo = MakeCrudFindSearchdAutorTypeorm();
+  const autor = await AutorRepo.handler(nome);
+  if (autor === void 0 || autor.length === 0)
+    return rep.status(404).send("Nenhum Autor encontrado");
+  return rep.status(200).send({ autor });
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   createAutorTypeorm,
   findAutorAllTypeorm,
   findAutorIdTypeorm,
+  findSearchAutorTypeorm,
   removeAutorTypeorm,
   updateAutorTypeorm
 });

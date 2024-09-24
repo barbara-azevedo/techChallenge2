@@ -28,13 +28,13 @@ var __decorateClass = (decorators, target, key, kind) => {
 // src/repositories/typeorm/post.repository.typeorm.ts
 var post_repository_typeorm_exports = {};
 __export(post_repository_typeorm_exports, {
-  PostTypeormRepository: () => PostTypeormRepository
+  PostRepository: () => PostRepository
 });
 module.exports = __toCommonJS(post_repository_typeorm_exports);
 
-// src/entities/post.entities.typeorm.ts
+// src/entities/post.entities.ts
 var import_typeorm = require("typeorm");
-var Post2 = class {
+var Post = class {
   constructor() {
   }
 };
@@ -42,51 +42,51 @@ __decorateClass([
   (0, import_typeorm.PrimaryGeneratedColumn)("increment", {
     name: "id_post"
   })
-], Post2.prototype, "id_post", 2);
+], Post.prototype, "id_post", 2);
 __decorateClass([
   (0, import_typeorm.Column)({
     name: "titulo",
     type: "varchar"
   })
-], Post2.prototype, "titulo", 2);
+], Post.prototype, "titulo", 2);
 __decorateClass([
   (0, import_typeorm.Column)({
     name: "conteudo",
     type: "varchar"
   })
-], Post2.prototype, "conteudo", 2);
+], Post.prototype, "conteudo", 2);
 __decorateClass([
   (0, import_typeorm.Column)({
     name: "dt_criacao",
     type: "timestamp without time zone",
     default: () => "CURRENT_TIMESTAMP"
   })
-], Post2.prototype, "dtCriacao", 2);
+], Post.prototype, "dtCriacao", 2);
 __decorateClass([
   (0, import_typeorm.Column)({
     name: "dt_modificacao",
     type: "timestamp without time zone",
     default: () => "CURRENT_TIMESTAMP"
   })
-], Post2.prototype, "dtModificacao", 2);
+], Post.prototype, "dtModificacao", 2);
 __decorateClass([
   (0, import_typeorm.Column)({
     name: "id_autor",
     type: "int"
   })
-], Post2.prototype, "id_autor", 2);
-Post2 = __decorateClass([
+], Post.prototype, "id_autor", 2);
+Post = __decorateClass([
   (0, import_typeorm.Entity)({
-    name: "post2"
+    name: "post"
   })
-], Post2);
+], Post);
 
 // src/lib/typeorm/typeorm.ts
-var import_typeorm3 = require("typeorm");
+var import_typeorm4 = require("typeorm");
 
-// src/entities/autor.entities.typeorm.ts
+// src/entities/autor.entities.ts
 var import_typeorm2 = require("typeorm");
-var Autor2 = class {
+var Autor = class {
   constructor() {
   }
 };
@@ -94,32 +94,58 @@ __decorateClass([
   (0, import_typeorm2.PrimaryGeneratedColumn)("increment", {
     name: "id_autor"
   })
-], Autor2.prototype, "id_autor", 2);
+], Autor.prototype, "id_autor", 2);
 __decorateClass([
   (0, import_typeorm2.Column)({
     name: "nome",
     type: "varchar"
   })
-], Autor2.prototype, "nome", 2);
+], Autor.prototype, "nome", 2);
 __decorateClass([
   (0, import_typeorm2.Column)({
     name: "dt_criacao",
     type: "timestamp without time zone",
     default: () => "CURRENT_TIMESTAMP"
   })
-], Autor2.prototype, "dtCriacao", 2);
+], Autor.prototype, "dtCriacao", 2);
 __decorateClass([
   (0, import_typeorm2.Column)({
     name: "dt_modificacao",
     type: "timestamp without time zone",
     default: () => "CURRENT_TIMESTAMP"
   })
-], Autor2.prototype, "dtModificacao", 2);
-Autor2 = __decorateClass([
+], Autor.prototype, "dtModificacao", 2);
+Autor = __decorateClass([
   (0, import_typeorm2.Entity)({
-    name: "autor2"
+    name: "autor"
   })
-], Autor2);
+], Autor);
+
+// src/entities/usuario.entities.ts
+var import_typeorm3 = require("typeorm");
+var Usuario = class {
+  constructor(email, senha) {
+    this.email = email;
+    this.senha = senha;
+  }
+};
+__decorateClass([
+  (0, import_typeorm3.PrimaryColumn)({
+    name: "email",
+    type: "varchar"
+  })
+], Usuario.prototype, "email", 2);
+__decorateClass([
+  (0, import_typeorm3.Column)({
+    name: "senha",
+    type: "varchar"
+  })
+], Usuario.prototype, "senha", 2);
+Usuario = __decorateClass([
+  (0, import_typeorm3.Entity)({
+    name: "usuario"
+  })
+], Usuario);
 
 // env/index.ts
 var import_config = require("dotenv/config");
@@ -131,7 +157,8 @@ var envSchema = import_zod.z.object({
   DATABASE_HOST: import_zod.z.string(),
   DATABASE_NAME: import_zod.z.string(),
   DATABASE_PASSWORD: import_zod.z.string(),
-  DATABASE_PORT: import_zod.z.coerce.number()
+  DATABASE_PORT: import_zod.z.coerce.number(),
+  SECRET_JWT: import_zod.z.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -141,14 +168,14 @@ if (!_env.success) {
 var env = _env.data;
 
 // src/lib/typeorm/typeorm.ts
-var appDataBase = new import_typeorm3.DataSource({
+var appDataBase = new import_typeorm4.DataSource({
   type: "postgres",
   host: env.DATABASE_HOST,
   port: env.DATABASE_PORT,
   username: env.DATABASE_USER,
   password: env.DATABASE_PASSWORD,
   database: env.DATABASE_NAME,
-  entities: [Autor2, Post2],
+  entities: [Autor, Post, Usuario],
   logging: env.NODE_ENV === "development"
 });
 appDataBase.initialize().then(() => {
@@ -158,20 +185,48 @@ appDataBase.initialize().then(() => {
 });
 
 // src/repositories/typeorm/post.repository.typeorm.ts
-var PostTypeormRepository = class {
+var import_typeorm6 = require("typeorm");
+var PostRepository = class {
   constructor() {
-    this.repo = appDataBase.getRepository(Post2);
+    this.repo = appDataBase.getRepository(Post);
   }
-  createPostTypeorm(post) {
+  createPost(post) {
     post.dtCriacao = /* @__PURE__ */ new Date();
     post.dtModificacao = /* @__PURE__ */ new Date();
     return this.repo.save(post);
   }
-  update(post) {
+  updatePost(post) {
     return this.repo.save(post);
+  }
+  async removePost(id) {
+    await this.repo.delete(id);
+  }
+  async findAllPost(page, limit) {
+    return this.repo.find({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        dtCriacao: "DESC"
+      }
+    });
+  }
+  async findOnePost(id) {
+    console.log("passou " + id);
+    return this.repo.findOne({
+      where: { id_post: id }
+    });
+  }
+  async findSearchPost(search) {
+    return this.repo.find({
+      where: [
+        {
+          conteudo: (0, import_typeorm6.Like)(`%${search}%`)
+        }
+      ]
+    });
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  PostTypeormRepository
+  PostRepository
 });

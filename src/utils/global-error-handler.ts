@@ -19,8 +19,13 @@ export const errorHandlerMap: ErroHandlerMap = {
                 ...(error instanceof ZodError && { erros: error.format() })
             });
     },
+
     ResourcesNotFoundErrors: (error, _, rep) => {
         return rep.status(400).send(error.message);
+    },
+
+    InvalidCrendtialsError: (error, _, rep) => {
+        return rep.status(401).send({ message: error.message });
     }
 }
 
@@ -38,7 +43,7 @@ export const globalErrorHandler = (
     }
 
     if (error.stack != undefined
-        && error.stack.includes('insert or update on table "post"') 
+        && error.stack.includes('insert or update on table "post"')
         && error.stack.includes('post_id_autor_fkey'))
         return rep.status(400).send({
             Error: '23503',

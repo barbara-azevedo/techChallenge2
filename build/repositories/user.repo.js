@@ -34,7 +34,8 @@ var envSchema = import_zod.z.object({
   DATABASE_HOST: import_zod.z.string(),
   DATABASE_NAME: import_zod.z.string(),
   DATABASE_PASSWORD: import_zod.z.string(),
-  DATABASE_PORT: import_zod.z.coerce.number()
+  DATABASE_PORT: import_zod.z.coerce.number(),
+  SECRET_JWT: import_zod.z.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -77,14 +78,6 @@ var UsuarioRepo = class {
     const result = await database.clientInstance?.query(
       `INSERT INTO "usuario" (username,pass) VALUES ($1,$2) RETURNING *`,
       [username, password]
-    );
-    return result?.rows[0];
-  }
-  async findWithPerson(userId) {
-    const result = await database.clientInstance?.query(
-      `SELECT * FROM "usuario" LEFT JOIN person ON "usuario".id = person.usuario_id WHERE "usuario".id = $1
-            `,
-      [userId]
     );
     return result?.rows[0];
   }
