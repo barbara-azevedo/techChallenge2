@@ -5,5 +5,5 @@ export interface IPost {
     conteudo?: string;
     dtCriacao?: Date;
     dtModificacao?: Date;
-    id_autor: number
+    id_autor: number; 
 }

@@ -16,6 +16,13 @@ export async function create(req: FastifyRequest, rep: FastifyReply) {
 
     const createUsuarioUseCase = MakeCreateUsuarioUseCase();
 
+    const findOneUsuarioUseCase = MakeFindOneUsuarioUseCase();
+
+    const findUser = await findOneUsuarioUseCase.handler(email);
+    
+    if(findUser != null && findUser != undefined)
+        return rep.status(302).send("Usuário já existente");
+    
     const user = await createUsuarioUseCase.handler(userWithHashPassword);
 
     return rep.code(201).send({ username: user?.email });

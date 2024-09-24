@@ -31,7 +31,42 @@ Com o banco ativo basta subir a apliação, alterando as variaveis e rodando o c
 docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish <port>:<port> --detach postgres
 
 ## URLs
-<host>:<port>/post/all
+<host>:<port>/usuario                -> criar usuário
+<host>:<port>/usuario/signin         -> get jwt token para acesar as Urls de POST
+
+<host>:<port>/autor/create           -> criar novo autor - POST
+<host>:<port>/autor/update/:id_autor -> alterar um autor existente pelo id - POST
+<host>:<port>/autor/remove/:id_autor -> remover um autor existente pelo id - POST
+<host>:<port>/autor/all'             -> listar todos os autores - GET
+<host>:<port>/autor/:id'             -> listar autor existente pelo id - GET
+<host>:<port>/autor/search/:nome     -> listar autor por trecho do nome - GET
+
+<host>:<port>/post/create            -> criar novo post - POST
+<host>:<port>/post/update/:id_post   -> alterar um post existente pelo id - POST
+<host>:<port>/post/remove/:id_post   -> remover um post existente pelo id - POST
+<host>:<port>/post/all               -> listar todos os autores - GET
+<host>:<port>/post/:id_post'         -> listar post existente pelo id - GET
+<host>:<port>/post/search/:search    -> listar post por trecho do post  - GET
+
+## Body Urls
+
+# host/usuario e host/usuario/signin
+{
+    "email": "teste@teste.com",
+    "senha": "123456"
+}
+
+# host/autor/create
+{
+    "nome": "Autor teste teste"
+}
+
+# host/post/create
+{
+    "titulo": "Meu post",
+    "conteudo": "bababababababa",
+    "id_autor": 1
+}
 
 ## Tabelas
 

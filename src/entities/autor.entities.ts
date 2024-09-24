@@ -4,7 +4,7 @@ import { IAutor } from "./models/autor.interface";
 @Entity({
     name: 'autor'
 })
-export class Autor implements IAutor{
+export class Autor implements IAutor {
 
     @PrimaryGeneratedColumn('increment', {
         name: 'id_autor'
@@ -20,17 +20,17 @@ export class Autor implements IAutor{
     @Column({
         name: 'dt_criacao',
         type: 'timestamp without time zone',
-        default: ()=>'CURRENT_TIMESTAMP'
+        default: () => 'CURRENT_TIMESTAMP'
     })
     dtCriacao?: Date;
 
     @Column({
         name: 'dt_modificacao',
         type: 'timestamp without time zone',
-        default: ()=>'CURRENT_TIMESTAMP'
+        default: () => 'CURRENT_TIMESTAMP'
     })
     dtModificacao?: Date;
-
-    constructor() {
+    
+     constructor() {
     }
 }

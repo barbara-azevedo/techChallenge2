@@ -1,10 +1,17 @@
 
-import { MakeCreateAutor, MakeFindAlldAutor, MakeFindIdAutor, MakeFindSearchdAutor, MakeRemoverAutor, MakeUpdateAutor } from "@/user-cases/factory/make-crud-autor-use-case";
+import {
+    MakeCreateAutor,
+    MakeFindAlldAutor,
+    MakeFindIdAutor,
+    MakeFindSearchdAutor,
+    MakeRemoverAutor,
+    MakeUpdateAutor
+} from "@/user-cases/factory/make-crud-autor-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 /*
-* * Inicio da Persistencia de Objetos **
+* * Metodos de Persistencia de Objetos **
 */
 export async function createAutor(req: FastifyRequest, rep: FastifyReply) {
     const registerBodySchema = z.object({
@@ -13,7 +20,7 @@ export async function createAutor(req: FastifyRequest, rep: FastifyReply) {
     const { nome } = registerBodySchema.parse(req.body);
     const createAutorUseCase = MakeCreateAutor()
     const autor = await createAutorUseCase.handler({ nome });
-    
+
     return rep.code(201).send({ autor });
 }
 
@@ -22,7 +29,7 @@ export async function updateAutor(req: FastifyRequest, rep: FastifyReply) {
         id_autor: z.coerce.number()
     });
     const { id_autor } = resgisterParameterSchema.parse(req.params);
-    
+
     const registerBodySchema = z.object({
         nome: z.string(),
     });
@@ -44,6 +51,13 @@ export async function removeAutor(req: FastifyRequest, rep: FastifyReply) {
 
     const { id_autor } = resgisterParameterSchema.parse(req.params);
 
+    const AutorRepo = MakeFindIdAutor();
+    const autor = await AutorRepo.handler(id_autor);
+
+    if (!autor) {
+        return rep.code(404).send('Autor não encontrado');
+    }
+
     if (id_autor === undefined || id_autor === 0) {
         return rep.code(500).send('Informe o id do autor para exclusão');
     }
@@ -55,7 +69,7 @@ export async function removeAutor(req: FastifyRequest, rep: FastifyReply) {
 }
 
 /*
-* * Inicio da Consulta de Objetos **
+* * Metodos de Consulta de Objetos **
 */
 export async function findAllAutor(req: FastifyRequest, rep: FastifyReply) {
     const registerQuerySchema = z.object({
@@ -63,10 +77,10 @@ export async function findAllAutor(req: FastifyRequest, rep: FastifyReply) {
         limit: z.coerce.number().default(10)
     });
     const { page, limit } = registerQuerySchema.parse(req.query);
-   
+
     const AutorRepo = MakeFindAlldAutor();
     const autor = await AutorRepo.handler(page, limit);
-   
+
     return rep.status(200).send({ autor });
 }
 
@@ -90,7 +104,7 @@ export async function findSearchAutor(req: FastifyRequest, rep: FastifyReply) {
 
     const AutorRepo = MakeFindSearchdAutor();
     const autor = await AutorRepo.handler(nome);
-   
+
     if (autor === undefined || autor.length === 0)
         return rep.status(404).send("Nenhum Autor encontrado");
 

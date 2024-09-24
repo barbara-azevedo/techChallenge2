@@ -11,15 +11,14 @@ export class PostRepository implements IPostRepository {
     constructor() {
         this.repo = appDataBase.getRepository(Post);
     }
- 
 
-    createPost(post: IPost): Promise<IPost & IAutor | undefined> {
+    createPost(post: IPost): Promise<IPost | undefined> {
         post.dtCriacao = new Date();
         post.dtModificacao = new Date();
         return this.repo.save(post);
     }
 
-    updatePost(post: IPost): Promise<(IPost & IAutor) | undefined> {
+    updatePost(post: IPost): Promise<(IPost) | undefined> {
         return this.repo.save(post);
     }
 
@@ -28,7 +27,7 @@ export class PostRepository implements IPostRepository {
     }
 
     async findAllPost(page: number, limit: number): Promise<(IPost[] & IAutor) | undefined> {
-        return this.repo.find({
+          return this.repo.find({
             skip: (page - 1) * limit,
             take: limit,
             order: {
@@ -37,15 +36,13 @@ export class PostRepository implements IPostRepository {
         });
     }
 
-    async findOnePost(id: number): Promise<(IPost & IAutor) | null> {
-        console.log('passou '+id);
-        
+    async findOnePost(id: number): Promise<(IPost) | null> {
         return this.repo.findOne({
             where: { id_post: id }
         })
     }
-    
-    async findSearchPost(search: string): Promise<(IPost[] & IAutor) | undefined> {
+
+    async findSearchPost(search: string): Promise<(IPost[]) | undefined> {
         return this.repo.find({
             where: [
                 {
