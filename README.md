@@ -1,6 +1,30 @@
 # EducaOnline
 
-This project was generated with [NodeJs].
+This project was generated with [NodeJs]. 
+
+
+## Requisitos funcionais:
+
+* GET/posts: lista de posts
+* GET/posts/:id - leitura de posts do ID específico
+* POST/posts - criação de postagens
+* PUT/posts/:id - edição de postagens
+* DELETE/posts/:id - exclusão de postagens
+* GET/posts/search - busca de posts  (com palavras chaves)
+
+## Grupo de trabalho
+* Bárbara Azevedo de Sá
+* Murilo Greco Campos de Almeida
+* Victor Lima Fernandes
+* Wellington Raimundo da Silva
+
+Nosso grupo adotou uma abordagem colaborativa para a implementação do projeto, realizando reuniões periódicas e mantendo uma comunicação ativa entre todos os membros. Isso nos permitiu alinhar atividades, compartilhar atualizações e trocar experiências de forma contínua.
+
+Utilizamos o conhecimento adquirido na segunda fase do curso de Pós Tech, com foco em desenvolvimento backend, banco de dados e uso de Docker e containers. Para o banco de dados, optamos por utilizar o PostgreSQL, que foi fundamental para estruturar e gerenciar os dados do nosso projeto.
+
+O processo foi desafiador, pois tivemos que nos aprofundar em novos conhecimentos e equilibrar o desenvolvimento com o alinhamento de atividades entre os integrantes. Além disso, enfrentamos o desafio de conciliar o tempo necessário para assistir às muitas horas de aulas e absorver o conteúdo extenso, sem o auxílio direto dos códigos-fonte apresentados nas aulas, o que exigiu uma maior dedicação e esforço da equipe.
+
+    
 
 ## Development server
 
