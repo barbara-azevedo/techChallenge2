@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main  # Executa o workflow ao realizar push na main branch
+  workflow_dispatch:  # Permite acionar o workflow manualmente pela interface do GitHub
+  pull_request:
+    branches:
+      - main  # Executa o workflow quando há pull request na main branch
 
 jobs:
   build:
