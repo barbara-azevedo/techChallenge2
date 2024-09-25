@@ -27,7 +27,7 @@ jobs:
 
     # Faz o build da imagem Docker
     - name: Build Docker Image
-      run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/mtech-challenge2:latest
+      run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:latest
 
     # Faz o push da imagem para o Docker Hub
     - name: Push Docker Image
