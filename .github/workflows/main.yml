@@ -46,4 +46,4 @@ jobs:
           -e DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
           -e SECRET_JWT=${{ secrets.SECRET_JWT }} \
           -p ${{ secrets.PORT }}:3000 \
-          ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:latest
+          ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:${{ github.sha }}
