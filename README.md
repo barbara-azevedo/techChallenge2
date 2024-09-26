@@ -41,6 +41,12 @@ Run `npm run build` to build the project. The build artifacts will be stored in 
 Dentro da pasta raiz do projeto foi criado um arquivo DockerFile que server para efetuar o builder do projeto para dentro de um container docker.
 Comando para efetuar o build: "docker build . -t <nome-app>"
 
+A imagem docker pode ser acessada no Docker Hub, conforme:
+
+Docker Hub: https://hub.docker.com/repository/docker/bazevedosa/tech-challenge2/general
+
+Comando para fazer download da imagem Docker: docker pull bazevedosa/tech-challenge2:latest
+
 ## Docker Run
 
 Após efetuar o builder do projeto será necessário subir a aplicação:
@@ -53,6 +59,12 @@ Caso não possua um banco de dados basta utilizar o arquivo "docker-compose-yml"
 
 Com o banco ativo basta subir a apliação, alterando as variaveis e rodando o comando:
 docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish <port>:<port> --detach postgres
+
+## Git Actions
+
+Este projeto está automatizado por meio do Git Actions. O workflow será acionado após cada novo commit na main branch ou conforme acionado manualmente nos Actions. 
+Ao acionar o workflow, a imagem Docker será construída e atualizada no repositório Docker Hub. 
+
 
 ## URLs
 <host>:<port>/usuario                -> criar usuário
