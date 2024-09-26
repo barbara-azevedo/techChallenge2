@@ -27,11 +27,11 @@ jobs:
 
     # Faz o build da imagem Docker
     - name: Build Docker Image
-      run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:latest
+      run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:${{ github.sha }}
 
     # Faz o push da imagem para o Docker Hub
     - name: Push Docker Image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:latest
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/tech-challenge2:${{ github.sha }}
 
     # Adiciona as variáveis secretas no container
     - name: Run Docker Container with ENV variables
