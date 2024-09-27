@@ -1,6 +1,28 @@
 # EducaOnline
 
-This project was generated with [NodeJs].
+This project was generated with [NodeJs]. 
+
+
+## Requisitos funcionais:
+
+* GET/posts: lista de posts
+* GET/posts/:id - leitura de posts do ID específico
+* POST/posts - criação de postagens
+* PUT/posts/:id - edição de postagens
+* DELETE/posts/:id - exclusão de postagens
+* GET/posts/search - busca de posts  (com palavras chaves)
+
+## Grupo de trabalho
+* Bárbara Azevedo de Sá
+* Murilo Greco Campos de Almeida
+* Victor Lima Fernandes
+* Wellington Raimundo da Silva
+
+Nosso grupo adotou uma abordagem colaborativa para a implementação do projeto, realizando reuniões periódicas e mantendo uma comunicação ativa entre todos os membros. Isso nos permitiu alinhar atividades, compartilhar atualizações e trocar experiências de forma contínua.
+
+Utilizamos o conhecimento adquirido na segunda fase do curso de Pós Tech, com foco em desenvolvimento backend, banco de dados e uso de Docker e containers. Para o banco de dados, optamos por utilizar o PostgreSQL, que foi fundamental para estruturar e gerenciar os dados do nosso projeto.
+
+O processo foi desafiador, pois tivemos que nos aprofundar em novos conhecimentos e equilibrar o desenvolvimento com o alinhamento de atividades entre os integrantes. Além disso, enfrentamos o desafio de conciliar o tempo necessário para assistir às muitas horas de aulas e absorver o conteúdo extenso, sem o auxílio direto dos códigos-fonte apresentados nas aulas, o que exigiu uma maior dedicação e esforço da equipe.
 
 ## Start da aplicação
 
@@ -23,6 +45,12 @@ Run `npm run build` to build the project. The build artifacts will be stored in 
 Dentro da pasta raiz do projeto foi criado um arquivo DockerFile que server para efetuar o builder do projeto para dentro de um container docker.
 Comando para efetuar o build: "docker build . -t <nome-app>"
 
+A imagem docker pode ser acessada no Docker Hub, conforme:
+
+Docker Hub: https://hub.docker.com/repository/docker/bazevedosa/tech-challenge2/general
+
+Comando para fazer download da imagem Docker: docker pull bazevedosa/tech-challenge2:latest
+
 ## Docker Run
 
 Após efetuar o builder do projeto será necessário subir a aplicação:
@@ -36,7 +64,14 @@ Caso não possua um banco de dados basta utilizar o arquivo "docker-compose-yml"
 Com o banco ativo basta subir a apliação, alterando as variaveis e rodando o comando:
 docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish <port>:<port> --detach postgres
 
+## Git Actions
+
+Este projeto está automatizado por meio do Git Actions. O workflow será acionado após cada novo commit na main branch ou conforme acionado manualmente nos Actions. 
+Ao acionar o workflow, a imagem Docker será construída e atualizada no repositório Docker Hub. 
+
 ## API REST / RESTFUL
+<host>:<port>/usuario                -> criar usuário
+<host>:<port>/usuario/signin         -> get jwt token para acesar as Urls de POST
 
 - URLs representam os endpoints da API.
 
@@ -76,6 +111,11 @@ docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER
     "conteudo": "bababababababa",
     "id_autor": 1
 }
+
+## Tests
+
+- Para rodar os teste automatizados a aplicação precisa estar online utilizando a IDE de sua preferência ou que a aplicação esteja em um ambiente de teste (deploy) 
+- Execução do comando: npm run test ou npm test
 
 ## Script DB
 
