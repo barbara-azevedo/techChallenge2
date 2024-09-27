@@ -24,7 +24,6 @@ export async function updatePost(req: FastifyRequest, rep: FastifyReply) {
         id_post: z.coerce.number()
     });
     const { id_post } = resgisterParameterSchema.parse(req.params);
-    console.log(id_post);
 
     const registerBodySchema = z.object({
         titulo: z.string(),
@@ -36,6 +35,11 @@ export async function updatePost(req: FastifyRequest, rep: FastifyReply) {
     if (id_post === undefined || id_post === 0) {
         return rep.code(400).send('Informe o id do post para alteração');
     }
+
+    const findOnePost = MakeFindOnePost();
+
+    await findOnePost.handler(id_post);
+
     const updatePostUseCase = MakeUpdatePost();
     const a = await updatePostUseCase.handler({ id_post, titulo, conteudo, id_autor });
     return rep.code(200).send(a);

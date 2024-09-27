@@ -19,6 +19,7 @@ export class PostRepository implements IPostRepository {
     }
 
     updatePost(post: IPost): Promise<(IPost) | undefined> {
+        post.dtModificacao = new Date();
         return this.repo.save(post);
     }
 

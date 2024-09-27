@@ -2,7 +2,13 @@
 
 This project was generated with [NodeJs].
 
-## Development server
+## Start da aplicação
+
+```typescript 
+npm install
+```
+
+## Run development
 
 Run `npm start:dev` for a dev server. Navigate to `http://localhost:3000/`. The app will automatically reload if you change any of the source files.
 
@@ -30,23 +36,26 @@ Caso não possua um banco de dados basta utilizar o arquivo "docker-compose-yml"
 Com o banco ativo basta subir a apliação, alterando as variaveis e rodando o comando:
 docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish <port>:<port> --detach postgres
 
-## URLs
-<host>:<port>/usuario                -> criar usuário
-<host>:<port>/usuario/signin         -> get jwt token para acesar as Urls de POST
+## API REST / RESTFUL
 
-<host>:<port>/autor/create           -> criar novo autor - POST
-<host>:<port>/autor/update/:id_autor -> alterar um autor existente pelo id - POST
-<host>:<port>/autor/remove/:id_autor -> remover um autor existente pelo id - POST
-<host>:<port>/autor/all'             -> listar todos os autores - GET
-<host>:<port>/autor/:id'             -> listar autor existente pelo id - GET
-<host>:<port>/autor/search/:nome     -> listar autor por trecho do nome - GET
+- URLs representam os endpoints da API.
 
-<host>:<port>/post/create            -> criar novo post - POST
-<host>:<port>/post/update/:id_post   -> alterar um post existente pelo id - POST
-<host>:<port>/post/remove/:id_post   -> remover um post existente pelo id - POST
-<host>:<port>/post/all               -> listar todos os autores - GET
-<host>:<port>/post/:id_post'         -> listar post existente pelo id - GET
-<host>:<port>/post/search/:search    -> listar post por trecho do post  - GET
+- POST   <host>:<port>/usuario                -> criar usuário
+- POST   <host>:<port>/usuario/signin         -> get jwt token para acesar as Urls
+
+- POST   <host>:<port>/autor/create           -> criar novo autor 
+- PUT    <host>:<port>/autor/update/:id_autor -> alterar um autor existente pelo id
+- DELETE <host>:<port>/autor/remove/:id_autor -> remover um autor existente pelo id 
+- GET    <host>:<port>/autor/all'             -> listar todos os autores 
+- GET    <host>:<port>/autor/:id'             -> listar autor existente pelo id 
+- GET    <host>:<port>/autor/search/:nome     -> listar autor por trecho do nome 
+
+- POST   <host>:<port>/post/create            -> criar novo post 
+- PUT    <host>:<port>/post/update/:id_post   -> alterar um post existente pelo id 
+- DELETE <host>:<port>/post/remove/:id_post   -> remover um post existente pelo id 
+- GET    <host>:<port>/post/all               -> listar todos os autores 
+- GET    <host>:<port>/post/:id_post'         -> listar post existente pelo id 
+- GET    <host>:<port>/post/search/:search    -> listar post por trecho do post  
 
 ## Body Urls
 
@@ -68,7 +77,7 @@ docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER
     "id_autor": 1
 }
 
-## Tabelas
+## Script DB
 
 CREATE table usuario (
 email VARCHAR(255) NOT NULL PRIMARY KEY,

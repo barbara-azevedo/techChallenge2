@@ -8,6 +8,6 @@ export async function postRoutes(app: FastifyInstance) {
     app.get('/post/search/:search', findSearchPost);
 
     app.post('/post/create', { onRequest: [validateJwt] }, createPost);
-    app.post('/post/update/:id_post', { onRequest: [validateJwt] }, updatePost);
-    app.post('/post/remove/:id_post', { onRequest: [validateJwt] }, removePost);
+    app.put('/post/update/:id_post', { onRequest: [validateJwt] }, updatePost);
+    app.delete('/post/remove/:id_post', { onRequest: [validateJwt] }, removePost);
 }

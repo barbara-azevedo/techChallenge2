@@ -1,5 +1,6 @@
 
 import { fastifyJwt } from '@fastify/jwt';
+
 import { env } from 'env';
 import { fastify } from 'fastify';
 import "reflect-metadata";
@@ -10,7 +11,6 @@ import "./lib/typeorm/typeorm";
 import { globalErrorHandler } from './utils/global-error-handler';
 
 export const app = fastify();
-
 
 app.register(fastifyJwt, {
     secret: env.SECRET_JWT,
