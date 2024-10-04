@@ -20,6 +20,6 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker build -t $DOCKER_USERNAME/fiap_tech_2:latest --build-arg MONGO_URI=${{ secrets.DATABASE_URL }} --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} --build-arg PORT=${{ secrets.PORT }} .
+          docker build -t $DOCKER_USERNAME/fiap_tech_2:latest --build-arg MONGO_URI=${{ secrets.DB_MONGO_URL }} --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} --build-arg PORT=${{ secrets.PORT }} .
           docker push $DOCKER_USERNAME/fiap_tech_2:latest
  
