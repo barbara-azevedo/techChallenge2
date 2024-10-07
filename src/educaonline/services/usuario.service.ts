@@ -8,10 +8,7 @@ import { IUsuarioRepository } from '../repositories/interfaces/usuario.interface
 @Injectable()
 export class UsuarioService {
   jwtOptions: { secret: string; verify: { algorithms: string[] } };
-  constructor(
-    private readonly userRepository: IUsuarioRepository,
-    private readonly jwtService: JwtService,
-  ) {
+  constructor(private readonly userRepository: IUsuarioRepository) {
     this.jwtOptions = {
       secret: 'postech',
       verify: { algorithms: ['HS256'] },
@@ -25,8 +22,8 @@ export class UsuarioService {
     if (!doesPasswordMath) {
       throw new UnauthorizedException();
     }
-
-    const token = await this.jwtService.signAsync(
+    const jwtService = new JwtService();
+    const token = await jwtService.signAsync(
       {},
       {
         secret: 'postech',

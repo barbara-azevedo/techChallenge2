@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { IUsuario } from 'src/educaonline/models/interfaces/usuario.interface';
-import { Usuario } from 'src/educaonline/models/usuario.entities';
+import { IUsuario } from '../models/interfaces/usuario.interface';
+import { Usuario } from '../models/usuario.entities';
 import { IUsuarioRepository } from './interfaces/usuario.interface.repository';
 
 export class UsuarioRepository implements IUsuarioRepository {

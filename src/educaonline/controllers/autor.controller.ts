@@ -9,13 +9,11 @@ import {
   Put,
   Query,
   UseGuards,
-  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
-import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
 import { z } from 'zod';
+import { AuthGuard } from '../../shared/guards/auth.guard';
+import { ZodValidationPipe } from '../../shared/pipe/zod-validation.pipe';
 import { AutorService } from '../services/autor.service';
 import { EducaOnlineService } from '../services/educaonline.service';
 
@@ -30,7 +28,7 @@ const updateAutorSchema = z.object({
 type CreateAutor = z.infer<typeof createAutorSchema>;
 type UpdateAutor = z.infer<typeof updateAutorSchema>;
 
-@UseInterceptors(LoggingInterceptor)
+//@UseInterceptors(LoggingInterceptor)
 @Controller('autor')
 export class AutorController {
   constructor(
@@ -90,7 +88,8 @@ export class AutorController {
     if (!autor) throw new BadRequestException('Autor not exists');
 
     const post = await this.postService.getPostAndAutor(autor);
-    if (post) throw new BadRequestException('Autor exist in post');
+
+    if (post[0]) throw new BadRequestException('Autor exist in post');
 
     return this.autorService.deleteAutor(id);
   }

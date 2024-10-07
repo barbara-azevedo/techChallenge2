@@ -1,9 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EducaOnline } from 'src/educaonline/models/educaonline.entities';
-import { IEducaOnline } from 'src/educaonline/models/interfaces/educaonline.interface';
 import { Autor } from '../models/autor.entities';
+import { EducaOnline } from '../models/educaonline.entities';
 import { IAutor } from '../models/interfaces/autor.interface';
+import { IEducaOnline } from '../models/interfaces/educaonline.interface';
 import { IEducaOnlineRepository } from './interfaces/educaonline.interface.repository';
 
 export class EducaOnlineRepository implements IEducaOnlineRepository {

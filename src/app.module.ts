@@ -14,7 +14,7 @@ import { UsuarioModule } from './educaonline/usuario.module';
     }),
     EducaOnlineModule,
     UsuarioModule,
-    MongooseModule.forRoot(process.env.MONGO_URI, { dbName: 'postech' }),
+    MongooseModule.forRoot(process.env.MONGO_URI, { dbName: 'poastech' }),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

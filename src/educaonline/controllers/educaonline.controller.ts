@@ -9,13 +9,11 @@ import {
   Put,
   Query,
   UseGuards,
-  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
-import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
 import { z } from 'zod';
+import { AuthGuard } from '../../shared/guards/auth.guard';
+import { ZodValidationPipe } from '../../shared/pipe/zod-validation.pipe';
 import { AutorService } from '../services/autor.service';
 import { EducaOnlineService } from '../services/educaonline.service';
 
@@ -34,7 +32,7 @@ const updatePostSchema = z.object({
 type CreatePost = z.infer<typeof createPostSchema>;
 type UpdatePost = z.infer<typeof updatePostSchema>;
 
-@UseInterceptors(LoggingInterceptor)
+//@UseInterceptors(LoggingInterceptor)
 @Controller('post')
 export class EducaOnlineController {
   constructor(

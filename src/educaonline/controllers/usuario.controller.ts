@@ -5,14 +5,12 @@ import {
   Post,
   Put,
   UseGuards,
-  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { hash } from 'bcryptjs';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
-import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
 import { z } from 'zod';
+import { AuthGuard } from '../../shared/guards/auth.guard';
+import { ZodValidationPipe } from '../../shared/pipe/zod-validation.pipe';
 import { UsuarioService } from '../services/usuario.service';
 
 const createUserSchema = z.object({
@@ -22,7 +20,7 @@ const createUserSchema = z.object({
 
 type UserParse = z.infer<typeof createUserSchema>;
 
-@UseInterceptors(LoggingInterceptor)
+//@UseInterceptors(LoggingInterceptor)
 @Controller('user')
 export class UsuarioController {
   constructor(private readonly userService: UsuarioService) {}

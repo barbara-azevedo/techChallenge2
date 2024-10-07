@@ -1,4 +1,4 @@
-import { IAutor } from 'src/educaonline/models/interfaces/autor.interface';
+import { IAutor } from '../../models/interfaces/autor.interface';
 import { IEducaOnline } from '../../models/interfaces/educaonline.interface';
 
 export abstract class IEducaOnlineRepository {

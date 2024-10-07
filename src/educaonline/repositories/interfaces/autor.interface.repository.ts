@@ -1,4 +1,4 @@
-import { IAutor } from 'src/educaonline/models/interfaces/autor.interface';
+import { IAutor } from '../../models/interfaces/autor.interface';
 
 export abstract class IAutorRepository {
   abstract getAllAutor(limit: number, page: number): Promise<IAutor[]>;
