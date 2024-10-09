@@ -13,10 +13,10 @@ This project was generated with [NodeJs].
 * GET/posts/search - busca de posts  (com palavras chaves)
 
 ## Grupo de trabalho
-* Bárbara Azevedo de Sá
-* Murilo Greco Campos de Almeida
-* Victor Lima Fernandes
-* Wellington Raimundo da Silva
+* RM 357978 - Bárbara Azevedo de Sá
+* RM 357524 - Murilo Greco Campos de Almeida
+* RM 357736 - Victor Lima Fernandes
+* RM 357330 - Wellington Raimundo da Silva
 
 Nosso grupo adotou uma abordagem colaborativa para a implementação do projeto, realizando reuniões periódicas e mantendo uma comunicação ativa entre todos os membros. Isso nos permitiu alinhar atividades, compartilhar atualizações e trocar experiências de forma contínua.
 
@@ -32,11 +32,11 @@ npm install
 
 ## Run development
 
-Run `npm start:dev` for a dev server. Navigate to `http://localhost:3000/`. The app will automatically reload if you change any of the source files.
+Run `npm run start:dev` .
 
 ## Build
 
-Run `npm run build` to build the project. The build artifacts will be stored in the `build/` directory.
+Run `npm run build` to build the project. The build artifacts will be stored in the `/dist` directory.
 
 # Docker
 
@@ -47,29 +47,23 @@ Comando para efetuar o build: "docker build . -t <nome-app>"
 
 A imagem docker pode ser acessada no Docker Hub, conforme:
 
-Docker Hub: https://hub.docker.com/repository/docker/bazevedosa/tech-challenge2/general
+Docker Hub: https://hub.docker.com/r/bazevedosa/fiap_tech_2
 
-Comando para fazer download da imagem Docker: docker pull bazevedosa/tech-challenge2:latest
+Comando para fazer download da imagem Docker: docker pull bazevedosa/fiap_tech_2
 
 ## Docker Run
 
-Após efetuar o builder do projeto será necessário subir a aplicação:
+- Após baixar a imagem basta subir a aplicação com o comando:
 
-Caso já tenha um banco de dados:
-
-docker run --env DATABASE_USER=<user> --env DATABASE_HOST=<host> --env DATABASE_NAME=<name> --env DATABASE_PASSWORD=<password> --env DATABASE_PORT=<port> -p <external-port>:<internal-port> <nome-app>
-
-Caso não possua um banco de dados basta utilizar o arquivo "docker-compose-yml" adicionar usuario e senha e rodar o comando: "docker-compose up -d", com isso será baixado uma imagem de um banco postgree e já vai inicializar.
-
-Com o banco ativo basta subir a apliação, alterando as variaveis e rodando o comando:
-docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish <port>:<port> --detach postgres
+docker run -p <external-port>:3000 <nome-app>
 
 ## Git Actions
 
-Este projeto está automatizado por meio do Git Actions. O workflow será acionado após cada novo commit na main branch ou conforme acionado manualmente nos Actions. 
+Este projeto está automatizado por meio do Git Actions. O workflow será acionado após cada novo commit na feito na branch disponibilizada no worlflow ou conforme acionado manualmente nos Actions. 
 Ao acionar o workflow, a imagem Docker será construída e atualizada no repositório Docker Hub. 
 
 ## API REST / RESTFUL
+
 <host>:<port>/usuario                -> criar usuário
 <host>:<port>/usuario/signin         -> get jwt token para acesar as Urls de POST
 
@@ -112,32 +106,19 @@ Ao acionar o workflow, a imagem Docker será construída e atualizada no reposit
     "relationAutorId": "66fd6a8e3476dc03211b922"
 }
 
-## Tests
+# Tests
 
-- Para rodar os teste automatizados a aplicação precisa estar online utilizando a IDE de sua preferência ou que a aplicação esteja em um ambiente de teste (deploy) 
-- Execução do comando: npm run test ou npm test
+- Os teste automatizados foram efetuados e está rodando dentro do Dockerfile caso ocorra algum erro vai garantir que a aplicação não suba até que seja corrigido o problema
 
-## Script DB
+# Danco de Dados
 
-CREATE table usuario (
-email VARCHAR(255) NOT NULL PRIMARY KEY,
-senha VARCHAR(255) NOT NULL
-);
+- Para essa aplição estamos utilizando MONGODB, o mesmo está em nuvem e vai amarzenar os dados de usuário / autor / post
 
-CREATE TABLE autor (
-id_autor SERIAL NOT NULL PRIMARY KEY,
-nome VARCHAR(100),
-dt_criacao TIMESTAMP ,
-dt_modificacao TIMESTAMP
-);
+# Relatos
 
-CREATE TABLE post (
-id_post SERIAL NOT NULL PRIMARY KEY,
-titulo VARCHAR(100),
-conteudo TEXT,
-dt_criacao TIMESTAMP ,
-dt_modificacao TIMESTAMP,
-id_autor SERIAL,
-FOREIGN KEY (id_autor) REFERENCES autor (id_autor)
-);
+- Foi muito dificil para criar esse projeto uma vez que todos nos não trabalhamos com nodejs, a curva ficou mas facil para uns que outros, a parte de criar os testes unitarios chegou a ser o maior desafio uma vez que criamos o projeto em nodejs com nest sempre ficou algum detalhe para ajustar.
+- Subir o projeto em um workflow do git para efetuar o deploy no docker também foi complicado pois sempre dava falha na geração da imagem e quando conseguimos fazer funcionar ainda faltava algum argumento para rodar corretamente, mas conseguimos vencer os desafios.
 
+# Conlusão
+
+- Conseguimos interagir e criar um problema em nodejs aumentando nosso leque de conhecimentos e agregando novas tecnologias para uso em nosso dia a dia.
