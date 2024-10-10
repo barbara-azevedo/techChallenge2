@@ -24,6 +24,16 @@ Utilizamos o conhecimento adquirido na segunda fase do curso de Pós Tech, com f
 
 O processo foi desafiador, pois tivemos que nos aprofundar em novos conhecimentos e equilibrar o desenvolvimento com o alinhamento de atividades entre os integrantes. Além disso, enfrentamos o desafio de conciliar o tempo necessário para assistir às muitas horas de aulas e absorver o conteúdo extenso, sem o auxílio direto dos códigos-fonte apresentados nas aulas, o que exigiu uma maior dedicação e esforço da equipe.
 
+## Codigo fonte
+
+- Criamos dois projetos sendo o primeiro que se encontra na master feito em nodejs e typeorm mas adotados para entrega do tech-changelle o projeto fetio com nestjs sendo:
+
+# github
+
+- https://github.com/barbara-azevedo/techChallenge2.git
+
+- branch: feature/nestjs
+
 ## Start da aplicação
 
 ```typescript 
