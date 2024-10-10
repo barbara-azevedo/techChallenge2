@@ -1,143 +1,173 @@
 # EducaOnline
 
-This project was generated with [NodeJs]. 
-
-
-## Requisitos funcionais:
-
-* GET/posts: lista de posts
-* GET/posts/:id - leitura de posts do ID específico
-* POST/posts - criação de postagens
-* PUT/posts/:id - edição de postagens
-* DELETE/posts/:id - exclusão de postagens
-* GET/posts/search - busca de posts  (com palavras chaves)
+EducaOnline é uma API RESTful criada com [Node.js](https://nodejs.org/) e [NestJS](https://nestjs.com/), utilizando MongoDB como banco de dados em nuvem para gerenciamento de usuários, autores e postagens. O projeto também está totalmente automatizado via GitHub Actions para integração contínua e utiliza Docker para simplificar a execução.
 
 ## Grupo de trabalho
-* Bárbara Azevedo de Sá
-* Murilo Greco Campos de Almeida
-* Victor Lima Fernandes
-* Wellington Raimundo da Silva
+- RM 357978 - Bárbara Azevedo de Sá
+- RM 357524 - Murilo Greco Campos de Almeida
+- RM 357736 - Victor Lima Fernandes
+- RM 357330 - Wellington Raimundo da Silva
 
-Nosso grupo adotou uma abordagem colaborativa para a implementação do projeto, realizando reuniões periódicas e mantendo uma comunicação ativa entre todos os membros. Isso nos permitiu alinhar atividades, compartilhar atualizações e trocar experiências de forma contínua.
+## Índice
 
-Utilizamos o conhecimento adquirido na segunda fase do curso de Pós Tech, com foco em desenvolvimento backend, banco de dados e uso de Docker e containers. Para o banco de dados, optamos por utilizar o PostgreSQL, que foi fundamental para estruturar e gerenciar os dados do nosso projeto.
+- [Requisitos Funcionais](#requisitos-funcionais)
+- [Instalação](#instalação)
+- [Rodando o Projeto](#rodando-o-projeto)
+  - [Rodando Localmente](#rodando-localmente)
+  - [Rodando com Docker](#rodando-com-docker)
+- [Variáveis de Ambiente](#variáveis-de-ambiente)
+- [Endpoints da API](#endpoints-da-api)
+- [Testes](#testes)
+- [Automação com GitHub Actions](#automação-com-github-actions)
+- [Desafios e Relatos](#desafios-e-relatos)
+- [Conclusão](#conclusão)
 
-O processo foi desafiador, pois tivemos que nos aprofundar em novos conhecimentos e equilibrar o desenvolvimento com o alinhamento de atividades entre os integrantes. Além disso, enfrentamos o desafio de conciliar o tempo necessário para assistir às muitas horas de aulas e absorver o conteúdo extenso, sem o auxílio direto dos códigos-fonte apresentados nas aulas, o que exigiu uma maior dedicação e esforço da equipe.
+## Requisitos Funcionais
 
-## Start da aplicação
+A API oferece os seguintes endpoints:
 
-```typescript 
+- **GET /posts**: Lista todos os posts.
+- **GET /posts/:id**: Busca post específico por ID.
+- **POST /posts**: Cria um novo post.
+- **PUT /posts/:id**: Atualiza um post existente.
+- **DELETE /posts/:id**: Deleta um post por ID.
+- **GET /posts/search**: Busca posts por palavras-chave.
+
+## Instalação
+
+Para instalar as dependências, execute o seguinte comando:
+
+```bash
 npm install
 ```
 
-## Run development
+## Rodando o Projeto
 
-Run `npm start:dev` for a dev server. Navigate to `http://localhost:3000/`. The app will automatically reload if you change any of the source files.
+### Rodando Localmente
 
-## Build
+Para rodar o projeto em ambiente de desenvolvimento, utilize:
 
-Run `npm run build` to build the project. The build artifacts will be stored in the `build/` directory.
+```bash
+npm run start:dev
+```
 
-# Docker
+A aplicação estará disponível em `http://localhost:3000` e será recarregada automaticamente ao detectar alterações nos arquivos fonte.
 
-## Docker Build
+### Rodando com Docker
 
-Dentro da pasta raiz do projeto foi criado um arquivo DockerFile que server para efetuar o builder do projeto para dentro de um container docker.
-Comando para efetuar o build: "docker build . -t <nome-app>"
+#### Build da Imagem
 
-A imagem docker pode ser acessada no Docker Hub, conforme:
+Para construir a imagem Docker do projeto, execute:
 
-Docker Hub: https://hub.docker.com/repository/docker/bazevedosa/tech-challenge2/general
+```bash
+docker build . -t <nome-da-imagem>
+```
 
-Comando para fazer download da imagem Docker: docker pull bazevedosa/tech-challenge2:latest
+#### Rodando o Container
 
-## Docker Run
+Depois de criar a imagem, você pode rodar o container com o seguinte comando:
 
-Após efetuar o builder do projeto será necessário subir a aplicação:
+```bash
+docker run -p <porta-externa>:3000 <nome-da-imagem>
+```
 
-Caso já tenha um banco de dados:
+### Usando Docker Compose
 
-docker run --env DATABASE_USER=<user> --env DATABASE_HOST=<host> --env DATABASE_NAME=<name> --env DATABASE_PASSWORD=<password> --env DATABASE_PORT=<port> -p <external-port>:<internal-port> <nome-app>
+Para uma configuração mais simples, use o Docker Compose. Primeiro, configure o arquivo `.env` com as variáveis de ambiente (veja abaixo), depois execute:
 
-Caso não possua um banco de dados basta utilizar o arquivo "docker-compose-yml" adicionar usuario e senha e rodar o comando: "docker-compose up -d", com isso será baixado uma imagem de um banco postgree e já vai inicializar.
+```bash
+docker-compose up
+```
 
-Com o banco ativo basta subir a apliação, alterando as variaveis e rodando o comando:
-docker run --name postgres --env POSTGRES_PASSWORD=<password>--env POSTGRES_USER=<username> --volume postgres:/data/postgres --publish <port>:<port> --detach postgres
+## Variáveis de Ambiente
 
-## Git Actions
+Para rodar a aplicação, você precisa configurar as seguintes variáveis de ambiente, seja no arquivo `.env` ou diretamente no comando `docker run`:
 
-Este projeto está automatizado por meio do Git Actions. O workflow será acionado após cada novo commit na main branch ou conforme acionado manualmente nos Actions. 
-Ao acionar o workflow, a imagem Docker será construída e atualizada no repositório Docker Hub. 
+```bash
+DATABASE_USER=seu_usuario_mongo
+DATABASE_PASSWORD=sua_senha_mongo
+DATABASE_NAME=educaonline
+DATABASE_HOST=seu_host_mongodb
+DATABASE_PORT=27017
+JWT_SECRET=sua_chave_secreta
+```
 
-## API REST / RESTFUL
-<host>:<port>/usuario                -> criar usuário
-<host>:<port>/usuario/signin         -> get jwt token para acesar as Urls de POST
+## Endpoints da API
 
-- URLs representam os endpoints da API.
+Aqui estão os principais endpoints da API:
 
-- POST   <host>:<port>/usuario                -> criar usuário
-- POST   <host>:<port>/usuario/signin         -> get jwt token para acesar as Urls
+### Autenticação de Usuário
 
-- POST   <host>:<port>/autor/create           -> criar novo autor 
-- PUT    <host>:<port>/autor/update/:id_autor -> alterar um autor existente pelo id
-- DELETE <host>:<port>/autor/remove/:id_autor -> remover um autor existente pelo id 
-- GET    <host>:<port>/autor/all'             -> listar todos os autores 
-- GET    <host>:<port>/autor/:id'             -> listar autor existente pelo id 
-- GET    <host>:<port>/autor/search/:nome     -> listar autor por trecho do nome 
+- **POST /usuario**: Cria um novo usuário.
+- **POST /usuario/signin**: Autentica o usuário e retorna um token JWT.
 
-- POST   <host>:<port>/post/create            -> criar novo post 
-- PUT    <host>:<port>/post/update/:id_post   -> alterar um post existente pelo id 
-- DELETE <host>:<port>/post/remove/:id_post   -> remover um post existente pelo id 
-- GET    <host>:<port>/post/all               -> listar todos os autores 
-- GET    <host>:<port>/post/:id_post'         -> listar post existente pelo id 
-- GET    <host>:<port>/post/search/:search    -> listar post por trecho do post  
+### Autores
 
-## Body Urls
+- **POST /autor/create**: Cria um novo autor.
+- **PUT /autor/update/:id_autor**: Atualiza os dados de um autor.
+- **DELETE /autor/remove/:id_autor**: Remove um autor.
+- **GET /autor/all**: Lista todos os autores.
+- **GET /autor/:id**: Obtém um autor por ID.
+- **GET /autor/search/:nome**: Busca autores por nome.
 
-# host/usuario e host/usuario/signin
+### Posts
+
+- **POST /post/create**: Cria um novo post.
+- **PUT /post/update/:id_post**: Atualiza um post.
+- **DELETE /post/remove/:id_post**: Remove um post.
+- **GET /post/all**: Lista todos os posts.
+- **GET /post/:id_post**: Obtém um post por ID.
+- **GET /post/search/:search**: Busca posts por conteúdo.
+
+### Exemplo de Corpo das Requisições
+
+#### Criar Usuário
+
+```json
 {
-    "email": "teste@teste.com",
-    "senha": "123456"
+  "email": "teste@teste.com",
+  "senha": "123456"
 }
+```
 
-# host/autor/create
+#### Criar Autor
+
+```json
 {
-    "nome": "Autor teste teste"
+  "nome": "Nome do Autor"
 }
+```
 
-# host/post/create
+#### Criar Post
+
+```json
 {
-    "titulo": "Meu post",
-    "conteudo": "bababababababa",
-    "id_autor": 1
+  "titulo": "Título do Post",
+  "conteudo": "Conteúdo do post",
+  "relationAutorId": "66fd6a8e3476dc03211b922"
 }
+```
 
-## Tests
+## Testes
 
-- Para rodar os teste automatizados a aplicação precisa estar online utilizando a IDE de sua preferência ou que a aplicação esteja em um ambiente de teste (deploy) 
-- Execução do comando: npm run test ou npm test
+Os testes automatizados garantem que a aplicação esteja funcionando corretamente. Para rodar os testes:
 
-## Script DB
+```bash
+npm run test
+```
 
-CREATE table usuario (
-email VARCHAR(255) NOT NULL PRIMARY KEY,
-senha VARCHAR(255) NOT NULL
-);
+Os testes são executados automaticamente no pipeline do GitHub Actions antes do deploy.
 
-CREATE TABLE autor (
-id_autor SERIAL NOT NULL PRIMARY KEY,
-nome VARCHAR(100),
-dt_criacao TIMESTAMP ,
-dt_modificacao TIMESTAMP
-);
+## Automação com GitHub Actions
 
-CREATE TABLE post (
-id_post SERIAL NOT NULL PRIMARY KEY,
-titulo VARCHAR(100),
-conteudo TEXT,
-dt_criacao TIMESTAMP ,
-dt_modificacao TIMESTAMP,
-id_autor SERIAL,
-FOREIGN KEY (id_autor) REFERENCES autor (id_autor)
-);
+Este projeto utiliza GitHub Actions para automação de CI/CD. Sempre que um novo commit é feito na branch principal, o workflow constrói e faz o deploy da imagem Docker para o [Docker Hub](https://hub.docker.com/r/bazevedosa/fiap_tech_2).
 
+## Desafios e Relatos
+
+Durante o desenvolvimento, enfrentamos vários desafios, especialmente por ser nossa primeira experiência com **Node.js** e **NestJS**. A criação dos testes unitários foi um dos maiores obstáculos, devido à complexidade das ferramentas que escolhemos. 
+
+Além disso, configurar o pipeline de integração contínua no GitHub Actions para fazer deploy automático no Docker Hub apresentou algumas dificuldades, mas conseguimos resolver os problemas com esforço conjunto.
+
+## Conclusão
+
+Apesar dos desafios, concluímos o projeto com sucesso, aprendendo bastante sobre novas tecnologias e ferramentas, como **Node.js**, **NestJS**, **MongoDB** e **Docker**, o que aumentou significativamente nossa expertise técnica.
