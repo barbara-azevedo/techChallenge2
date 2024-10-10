@@ -8,6 +8,8 @@ EducaOnline é uma API RESTful criada com [Node.js](https://nodejs.org/) e [Nest
 - RM 357736 - Victor Lima Fernandes
 - RM 357330 - Wellington Raimundo da Silva
 
+Nosso grupo adotou uma abordagem colaborativa, realizando reuniões frequentes para alinhar atividades, compartilhar conhecimento e resolver desafios encontrados ao longo do desenvolvimento. O projeto aplicou os conceitos aprendidos durante o curso de Pós Tech, focando em backend, banco de dados e uso de containers com Docker.
+
 ## Índice
 
 - [Requisitos Funcionais](#requisitos-funcionais)
