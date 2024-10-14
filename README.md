@@ -65,7 +65,7 @@ Comando para fazer download da imagem Docker: docker pull bazevedosa/fiap_tech_2
 
 - Após baixar a imagem basta subir a aplicação com o comando:
 
-docker run -p <external-port>:3000 <nome-app>
+docker run -d -p <external-port>:3000 bazevedosa/fiap_tech_2
 
 ## Git Actions
 
