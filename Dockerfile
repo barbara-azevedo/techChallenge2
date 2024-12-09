@@ -24,7 +24,7 @@ RUN npm i -g pnpm
 
 RUN pnpm build
 
-RUN npm run test
+RUN npm run test:e2e
 
 EXPOSE 3000
 
