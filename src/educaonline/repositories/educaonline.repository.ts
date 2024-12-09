@@ -30,7 +30,7 @@ export class EducaOnlineRepository implements IEducaOnlineRepository {
   }
 
   getOnePost(postId: string): Promise<IEducaOnline> {
-    return this.postModel.findById(postId).exec();
+    return this.postModel.findById(postId).populate('autor', null, Autor.name).exec();
   }
 
   async createPost(post: IEducaOnline): Promise<void> {
