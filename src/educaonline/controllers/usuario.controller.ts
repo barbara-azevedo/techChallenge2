@@ -26,7 +26,7 @@ export class UsuarioController {
   constructor(private readonly userService: UsuarioService) {}
 
   @UsePipes(new ZodValidationPipe(createUserSchema))
-  @Get()
+  @Post()
   async getToken(@Body() { email, senha }) {
     return this.userService.getOneUser({ email, senha });
   }
