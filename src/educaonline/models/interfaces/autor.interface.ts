@@ -1,5 +1,5 @@
 export interface IAutor {
-  id?: string;
+  _id?: string;
   nome?: string;
   dtCriacao?: Date;
   dtModificacao?: Date;

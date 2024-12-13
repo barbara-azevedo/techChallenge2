@@ -31,7 +31,7 @@ export class AutorRepository implements IAutorRepository {
 
   async updateAutor(autorId: string, autor: IAutor): Promise<void> {
     autor.dtModificacao = new Date();
-    autor.id = autorId;
+    autor._id = autorId;
     await this.autorModel
       .updateOne(
         { _id: autorId },
