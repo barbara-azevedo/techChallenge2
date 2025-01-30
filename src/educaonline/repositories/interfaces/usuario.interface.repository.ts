@@ -4,4 +4,9 @@ export abstract class IUsuarioRepository {
   abstract getOneUser(email: IUsuario): Promise<IUsuario>;
   abstract createUser(user: IUsuario): Promise<void>;
   abstract updateUser(user: IUsuario): Promise<void>;
+
+    abstract getAllUsers(
+      limit: number,
+      page: number,
+    ): Promise<IUsuario[]>;
 }

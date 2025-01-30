@@ -15,7 +15,7 @@ export class UsuarioService {
     };
   }
 
-  async getOneUser(user: IUsuario) {
+  async getTokenUser(user: IUsuario) {
     const findUser = await this.userRepository.getOneUser(user);
     const doesPasswordMath = await compare(user.senha, findUser.senha);
 
@@ -35,11 +35,21 @@ export class UsuarioService {
     return { token };
   }
 
+  async getOneUser(user: IUsuario) {
+    let findUser = await this.userRepository.getOneUser(user);
+    findUser.senha='';
+    return { findUser };
+  }
+
   async createUser(user: IUsuario) {
     return this.userRepository.createUser(user);
   }
 
   async updateUser(user: IUsuario) {
     return this.userRepository.updateUser(user);
+  }
+
+  async getAllUsers(limit: number, page: number) {
+    return this.userRepository.getAllUsers(limit, page);
   }
 }

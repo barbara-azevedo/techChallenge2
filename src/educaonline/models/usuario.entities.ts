@@ -13,6 +13,8 @@ export class Usuario implements IUsuario {
   email: string;
   @Prop()
   senha: string;
+  @Prop()
+  tipoAcesso: string;
   @Prop({ type: mongoose.Schema.Types.Date })
   dtCriacao?: Date;
   @Prop({ type: mongoose.Schema.Types.Date })

@@ -6,7 +6,8 @@ import { Usuario } from '../models/usuario.entities';
 import { IUsuarioRepository } from './interfaces/usuario.interface.repository';
 
 export class UsuarioRepository implements IUsuarioRepository {
-  constructor(@InjectModel(Usuario.name) private userModel: Model<IUsuario>) {}
+  constructor(@InjectModel(Usuario.name) private userModel: Model<IUsuario>) { }
+
   async updateUser(user: IUsuario): Promise<void> {
     user.dtModificacao = new Date();
     await this.userModel.updateOne(user).exec();
@@ -26,5 +27,14 @@ export class UsuarioRepository implements IUsuarioRepository {
     if (u) throw new BadRequestException('User found');
 
     await createUser.save();
+  }
+
+  async getAllUsers(limit: number, page: number): Promise<IUsuario[]> {
+    const offset = (page - 1) * limit;
+    return this.userModel
+      .find()
+      .skip(offset)
+      .limit(limit)
+      .exec();
   }
 }
