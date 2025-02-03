@@ -6,6 +6,7 @@ export abstract class IUsuarioRepository {
   abstract updateUser(user: IUsuario): Promise<void>;
 
     abstract getAllUsers(
+      tipoAcesso: any,
       limit: number,
       page: number,
     ): Promise<IUsuario[]>;

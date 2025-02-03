@@ -29,10 +29,14 @@ export class UsuarioRepository implements IUsuarioRepository {
     await createUser.save();
   }
 
-  async getAllUsers(limit: number, page: number): Promise<IUsuario[]> {
+  async getAllUsers(tipoAcesso: any, limit: number, page: number): Promise<IUsuario[]> {
     const offset = (page - 1) * limit;
+    if (!tipoAcesso || tipoAcesso === 'ADMIN') {
+      tipoAcesso = ['ALUNO', 'PROFESSOR'];
+    }
     return this.userModel
       .find()
+      .where({ tipoAcesso: tipoAcesso })
       .skip(offset)
       .limit(limit)
       .exec();

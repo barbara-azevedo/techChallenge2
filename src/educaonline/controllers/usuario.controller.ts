@@ -18,7 +18,8 @@ import { UsuarioService } from '../services/usuario.service';
 const createUserSchema = z.object({
   email: z.string().email(),
   senha: z.string(),
-  tipoAcesso: z.string()
+  tipoAcesso: z.string(),
+  nome: z.string()
 });
 
 const userGetTokenSchema = z.object({
@@ -41,26 +42,28 @@ export class UsuarioController {
 
   @UsePipes(new ZodValidationPipe(createUserSchema))
   @Post('create')
-  async createUsuario(@Body() { email, senha, tipoAcesso }: UserParse) {
+  async createUsuario(@Body() { email, senha, tipoAcesso, nome }: UserParse) {
     const hashedPassword = await hash(senha, 8);
-    return this.userService.createUser({ email, senha: hashedPassword, tipoAcesso });
+    console.log(email, senha, tipoAcesso, nome)
+    return this.userService.createUser({ email, senha: hashedPassword, tipoAcesso, nome });
   }
 
   @UseGuards(AuthGuard)
   @UsePipes(new ZodValidationPipe(createUserSchema))
   @Put('update')
-  async updateUsuario(@Body() { email, senha, tipoAcesso }: UserParse) {
+  async updateUsuario(@Body() { email, senha, tipoAcesso, nome }: UserParse) {
     const hashedPassword = await hash(senha, 8);
-    return this.userService.updateUser({ email, senha: hashedPassword, tipoAcesso });
+    return this.userService.updateUser({ email, senha: hashedPassword, tipoAcesso, nome });
   }
 
   @UseGuards(AuthGuard)
   @Get('all')
   async getAllUsers(
+    @Query('tipoAcesso') tipoAcesso: string,
     @Query('limit') limit: number,
-    @Query('page') page: number,
+    @Query('page') page: number
   ) {
-    return this.userService.getAllUsers(limit, page);
+    return this.userService.getAllUsers(tipoAcesso, limit, page);
   }
 
   @UseGuards(AuthGuard)

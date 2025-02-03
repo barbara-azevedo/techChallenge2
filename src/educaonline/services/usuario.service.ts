@@ -27,7 +27,7 @@ export class UsuarioService {
       {},
       {
         secret: 'postech',
-        expiresIn: '1h',
+        expiresIn: '5h',
         jwtid: uuidv4(),
       },
     );
@@ -49,7 +49,7 @@ export class UsuarioService {
     return this.userRepository.updateUser(user);
   }
 
-  async getAllUsers(limit: number, page: number) {
-    return this.userRepository.getAllUsers(limit, page);
+  async getAllUsers(tipoAcesso: any, limit: number, page: number) {
+    return this.userRepository.getAllUsers(tipoAcesso, limit, page);
   }
 }

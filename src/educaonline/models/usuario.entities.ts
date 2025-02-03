@@ -14,6 +14,8 @@ export class Usuario implements IUsuario {
   @Prop()
   senha: string;
   @Prop()
+  nome: string;
+  @Prop()
   tipoAcesso: string;
   @Prop({ type: mongoose.Schema.Types.Date })
   dtCriacao?: Date;
