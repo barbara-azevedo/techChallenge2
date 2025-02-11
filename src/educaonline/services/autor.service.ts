@@ -17,6 +17,7 @@ export class AutorService {
   }
 
   async getAutor(autorId: string) {
+    console.log(autorId)
     const autor = await this.autorRepository.getOneAutor(autorId);
     if (!autor) throw new NotFoundException('autor not found');
     return autor;
